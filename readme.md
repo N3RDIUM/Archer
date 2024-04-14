@@ -3,3 +3,5 @@ A ray tracing engine built to run with a decent frame rate even on CPU, allowing
 
 # TODO
 - [ ] Move the channel stuff to the channel repo, otherwise ppl will have to download hundreds of screenshots.
+- [ ] Find sth to make the visuals and illustrations for the channel
+- [ ] FIX YOUR VOICE
