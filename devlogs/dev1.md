@@ -6,4 +6,7 @@
 - [ ] Export results to image
 
 ## Script
-TODO...
+TODO... 
+(Explain visuals + demos with, well, visuals) 
+(explain code with codesnap images) 
+(When one todo item is complete, show codesnap of me crossing it out)
