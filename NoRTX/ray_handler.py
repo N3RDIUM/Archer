@@ -14,3 +14,9 @@ class RayHandler:
 
         self.rays = np.zeros(tuple(resolution) + [rpp, 6], dtype=np.float64)  # 3d vector, 3d position, color in single array
         self.pixels = np.zeros(tuple(resolution) + [3], dtype=np.uint8)  # What will be rendered onto the screen
+
+    def step(self, scene) -> None:
+        """
+        Use this method to parallely process one bounce of rays and store the averages in the `self.pixels` prop.
+        """
+        # WIP
