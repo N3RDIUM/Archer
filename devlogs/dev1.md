@@ -3,7 +3,8 @@
 ## Goals
 - [ ] All rays are collectively represented using numpy arrays.
 - [ ] Sphere intersection handler class
-- [ ] Export results to image
+- [ ] Render a solid sphere
+- [x] Export results to image
 
 ## Script
 TODO... 
@@ -32,3 +33,4 @@ Our renderer will output the final image as a 3d numpy array, and we need to sav
 For that, we'll use pillow.
 Let's create an export image function, which takes the 3d numpy array and the image filename.
 This function first converts the array into an pillow image, and then saves the image.
+That's it for the image exporter!
