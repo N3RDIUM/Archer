@@ -12,7 +12,7 @@ class RayHandler:
         self.rpp = rpp # "Rays Per Pixel"
         self.resolution = resolution
 
-        self.rays = np.zeros(tuple(resolution) + [rpp, 6], dtype=np.float64)  # 3d vector, 3d position, color in single array
+        self.rays = np.zeros(tuple(resolution) + [rpp, 9], dtype=np.float64)  # 3d vector, 3d position, color in single array
         self.pixels = np.zeros(tuple(resolution) + [3], dtype=np.uint8)  # What will be rendered onto the screen
 
     def step(self, scene) -> None:
