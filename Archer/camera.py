@@ -1,8 +1,5 @@
-import time
 import taichi as ti
 from vectors import Ray, vec3, vec2
-
-ti.init(arch=ti.cpu)
 
 @ti.func
 def normalize(v: vec3) -> vec3:
