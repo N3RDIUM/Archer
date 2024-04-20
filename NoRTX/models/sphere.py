@@ -14,5 +14,5 @@ class Sphere:
         b = 2.0 * ti.math.dot(oc, ray.direction)
         c = ti.math.dot(oc, oc) - self.radius * self.radius
         d = b * b - 4 * a * c
-        solution = -b - ti.sqrt(d) / (2.0 * a)
-        return solution * d >= 0
+        
+        return (-b - ti.sqrt(d)) / (2.0 * a) * d >= 0
