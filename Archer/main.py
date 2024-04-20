@@ -8,13 +8,13 @@ from vectors import vec3, vec2
 from models.sphere import Sphere
 
 ti.init(arch=ti.cpu)
-RESOLUTION = (1920, 1080)
+RESOLUTION = (1080, 1920)
 
 scene = Scene(
     Sphere(vec3(0, 0, -5), 1),
-    1
+    8
 )
-camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 60)
+camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 90)
 
 t = perf_counter()
 img = scene.render(camera)

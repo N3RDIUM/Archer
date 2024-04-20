@@ -60,6 +60,7 @@ class Camera:
         theta = self.fov * 0.5 * ti.math.pi / 180
         uv = ndc * ti.tan(theta)
         yaw, pitch, roll = self.rotation
+        
         yaw = yaw * ti.math.pi / 180
         pitch = pitch * ti.math.pi / 180
         roll = roll * ti.math.pi / 180
@@ -84,4 +85,10 @@ class Camera:
         uv_rotated = world_to_camera @ vec3(uv.x, uv.y, -1.0)
         origin = self.position
         direction = normalize(uv_rotated)
+        
+        # Dither
+        origin[0] += (ti.random() - 0.5) / 100
+        origin[1] += (ti.random() - 0.5) / 100
+        origin[2] += (ti.random() - 0.5) / 100
+        
         return Ray(origin, direction)
