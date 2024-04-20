@@ -1,6 +1,5 @@
 import taichi as ti
 from vectors import vec2, Color
-from models.sphere import Sphere
 from camera import Camera
 
 @ti.dataclass

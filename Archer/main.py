@@ -1,4 +1,5 @@
 from random import random
+from math import sin
 from time import perf_counter
 import taichi as ti
 from scene import Scene
@@ -29,6 +30,7 @@ gui = ti.GUI("Archer", res=RESOLUTION)
 while gui.running:
     t = perf_counter()
     img = scene.render(camera, spheres, ret)
+    print(f"\rRender took {perf_counter() - t}s ({1 / (perf_counter() - t)} FPS, {img.shape[0] * img.shape[1] * scene.rpp} rays)", end="")
     gui.set_image(img)
     gui.show()
-    print(f"\rRender took {perf_counter() - t}s ({1 / (perf_counter() - t)} FPS, {img.shape[0] * img.shape[1] * scene.rpp} rays)", end="")
+    camera.fov = 45 + sin(perf_counter()) / 10
