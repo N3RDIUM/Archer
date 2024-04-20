@@ -26,7 +26,7 @@ camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0)
 ret = ti.field(dtype=ti.u8, shape=(camera.resolution[0], camera.resolution[1], 3))
 
 gui = ti.GUI("Winodow", res=RESOLUTION)
-while True:
+while gui.running:
     t = perf_counter()
     img = scene.render(camera, spheres, ret)
     gui.set_image(img)
