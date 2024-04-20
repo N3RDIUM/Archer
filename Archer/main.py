@@ -19,7 +19,7 @@ for i in range(n):
     spheres[i].radius = (random() + 1) / 4
 
 scene = Scene(
-    Color(0, 95, 95),
+    Color(0, 128, 128),
     128
 )
 camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 45, 0.0032)
