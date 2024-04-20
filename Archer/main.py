@@ -7,7 +7,7 @@ from export_image import export_image
 from vectors import vec3, vec2, Color
 from models.sphere import Sphere
 
-ti.init(ti.cpu)
+ti.init(ti.gpu, default_fp=ti.f32, default_ip=ti.i32)
 RESOLUTION = (1920, 1080)
 
 scene = Scene(

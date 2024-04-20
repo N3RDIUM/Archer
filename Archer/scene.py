@@ -19,7 +19,6 @@ class Scene:
                 _sumg = .0
                 _sumb = .0
                 
-                ti.loop_config(parallelize=True)
                 for pidx in range(rpp):
                     ray = camera.get_ray(vec2(x, y))
                     intersect = sphere.intersect(ray)
