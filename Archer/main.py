@@ -31,6 +31,10 @@ while gui.running:
     t = perf_counter()
     img = scene.render(camera, spheres, ret)
     print(f"\rRender took {perf_counter() - t}s ({1 / (perf_counter() - t)} FPS, {img.shape[0] * img.shape[1] * scene.rpp} rays)", end="")
+    
+    t = perf_counter()
     gui.set_image(img)
     gui.show()
+    print(f"; set_image took {perf_counter() - t}s", end="")
+    
     camera.fov = 45 + sin(perf_counter()) / 10
