@@ -13,7 +13,7 @@ def normalize(v: vec3) -> vec3:
         A normalized vector (ti.vec3).
     """
     mag = ti.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
-    return (v / mag) * (mag > 1e-6)+ v * (not mag > 1e-6)
+    return v / mag
 
 @ti.dataclass
 class Camera:
@@ -21,51 +21,45 @@ class Camera:
     position: vec3
     rotation: vec3
     fov: ti.f32
-    
+    dither: ti.f32
+
     @ti.func
     def get_ray(self, pixel: vec2) -> Ray:
-        """
-        Calculates and returns the ray originating from the camera
-        that corresponds to the given pixel on the image plane.
+        aspect_ratio = self.resolution.x / self.resolution.y
+        ndc_x = (2 * pixel.x / self.resolution.x) - 1.0
+        ndc_y = 1.0 - (2 * pixel.y / self.resolution.y)
 
-        Args:
-            pixel: A vec2 representing the pixel coordinates.
+        screen_x = ndc_x * aspect_ratio * ti.tan(self.fov / 2)
+        screen_y = ndc_y * ti.tan(self.fov / 2)
 
-        Returns:
-            A Ray object representing the ray corresponding to the pixel.
-        """
-        ndc = (pixel - self.resolution * 0.5) / self.resolution
-        ndc.x *= self.resolution.x / self.resolution.y
-        theta = self.fov * 0.5 * ti.math.pi / 180
-        uv = ndc * ti.tan(theta)
-        yaw, pitch, roll = self.rotation
+        direction = vec3(screen_x, screen_y, -1.0)
+        direction = direction + vec3(ti.random(), ti.random(), ti.random()) * self.dither
         
-        pitch += ti.random() * 0.1 - 0.05
-        yaw += ti.random() * 0.1 - 0.05
-        roll += ti.random() * 0.1 - 0.05
-        
-        yaw = yaw * ti.math.pi / 180
-        pitch = pitch * ti.math.pi / 180
-        roll = roll * ti.math.pi / 180
+        sx, cx = ti.sin(self.rotation.x), ti.cos(self.rotation.x)
+        sy, cy = ti.sin(self.rotation.y), ti.cos(self.rotation.y)
+        sz, cz = ti.sin(self.rotation.z), ti.cos(self.rotation.z)
 
-        Ry = ti.Matrix([
-            [ti.cos(yaw), -ti.sin(yaw), 0],
-            [ti.sin(yaw), ti.cos(yaw), 0],
-            [0, 0, 1]
-        ])
-        Rx = ti.Matrix([
+        rx = ti.Matrix([
             [1, 0, 0],
-            [0, ti.cos(pitch), -ti.sin(pitch)],
-            [0, ti.sin(pitch), ti.cos(pitch)]
+            [0, cx, -sx],
+            [0, sx, cx]
         ])
-        Rz = ti.Matrix([
-            [ti.cos(roll), -ti.sin(roll), 0],
-            [ti.sin(roll), ti.cos(roll), 0],
+
+        ry = ti.Matrix([
+            [cy, 0, sy],
+            [0, 1, 0],
+            [-sy, 0, cy]
+        ])
+
+        rz = ti.Matrix([
+            [cz, -sz, 0],
+            [sz, cz, 0],
             [0, 0, 1]
         ])
+
+        direction = rx @ direction
+        direction = ry @ direction
+        direction = rz @ direction
+        direction = normalize(direction)
         
-        world_to_camera = Rz @ Rx @ Ry
-        uv_rotated = world_to_camera @ vec3(uv.x, uv.y, -1.0)
-        origin = self.position
-        direction = normalize(uv_rotated)
-        return Ray(origin, direction)
+        return Ray(self.position + vec3(ti.random(), ti.random(), ti.random()) * self.dither, direction)
