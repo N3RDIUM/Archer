@@ -20,9 +20,9 @@ spheres[0].radius = 1
 
 scene = Scene(
     Color(0, 128, 128),
-    1
+    8
 )
-camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 45, 0.0032)
+camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 45, 0.0008)
 ret = ti.field(dtype=ti.u8, shape=(camera.resolution[0], camera.resolution[1], 3))
 
 gui = ti.GUI("Winodow", res=RESOLUTION)
