@@ -16,13 +16,15 @@ scene = Scene(
     4
 )
 camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 90, 0.0032)
+ret = ti.field(dtype=ti.u8, shape=(camera.resolution[0], camera.resolution[1], 3))
 
 t = perf_counter()
-img = scene.render(camera)
+img = scene.render(camera, ret)
 print(f"Took {perf_counter() - t} seconds. That's {1 / (perf_counter() - t)} FPS!")
+print(f"Computed {img.shape[0] * img.shape[1] * scene.rpp} rays.")
 
 render = img.to_numpy()
-render = np.average(render, axis=2)
 render = np.swapaxes(render, 0, 1)
 render = np.asarray(render, dtype=np.uint8)
 export_image(render, "render.png")
+print("Exported image to render.png")

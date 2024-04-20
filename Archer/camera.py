@@ -35,19 +35,26 @@ class Camera:
         direction = vec3(screen_x, screen_y, -1.0)
         random_offset = vec3(ti.random(), ti.random(), ti.random()) * self.dither
         direction += random_offset
-
+        
+        sinx = ti.sin(self.rotation.x)
+        cosx = ti.cos(self.rotation.x)
+        siny = ti.sin(self.rotation.y)
+        cosy = ti.cos(self.rotation.y)
+        sinz = ti.sin(self.rotation.z)
+        cosz = ti.cos(self.rotation.z)
+        
         rotation_matrix = ti.Matrix([
-            [ti.cos(self.rotation.y) * ti.cos(self.rotation.z),
-             ti.sin(self.rotation.x) * ti.sin(self.rotation.y) * ti.cos(self.rotation.z) - ti.cos(self.rotation.x) * ti.sin(self.rotation.z),
-             ti.cos(self.rotation.x) * ti.sin(self.rotation.y) * ti.cos(self.rotation.z) + ti.sin(self.rotation.x) * ti.sin(self.rotation.z)],
+            [cosy * cosz,
+             sinx * siny * cosz - cosx * sinz,
+             cosx * siny * cosz + sinx * sinz],
 
-            [ti.cos(self.rotation.y) * ti.sin(self.rotation.z),
-             ti.sin(self.rotation.x) * ti.sin(self.rotation.y) * ti.sin(self.rotation.z) + ti.cos(self.rotation.x) * ti.cos(self.rotation.z),
-             ti.cos(self.rotation.x) * ti.sin(self.rotation.y) * ti.sin(self.rotation.z) - ti.sin(self.rotation.x) * ti.cos(self.rotation.z)],
+            [cosy * sinz,
+             sinx * siny * sinz + cosx * cosz,
+             cosx * siny * sinz - sinx * cosz],
 
-            [-ti.sin(self.rotation.y),
-             ti.sin(self.rotation.x) * ti.cos(self.rotation.y),
-             ti.cos(self.rotation.x) * ti.cos(self.rotation.y)]
+            [-siny,
+             sinx * cosy,
+             cosx * cosy]
         ])
 
         direction = rotation_matrix @ direction

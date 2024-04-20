@@ -9,27 +9,30 @@ class Scene:
     sky: Color
     rpp: ti.u8
 
-    def render(self, camera):
-        ret = ti.field(dtype=ti.u8, shape=(camera.resolution[0], camera.resolution[1], self.rpp, 3))
-        
-        sky_multiplier = ti.Vector([self.sky.r, self.sky.g, self.sky.b]) * 255
+    def render(self, camera, ret):
+        sky_multiplier = ti.Vector([self.sky.r, self.sky.g, self.sky.b])
         
         @ti.kernel
         def _render(camera: Camera, sphere: Sphere, rpp: ti.u8):
-            ti.loop_config(parallelize=True)
             for x, y in ti.ndrange(int(camera.resolution[0]), int(camera.resolution[1])):
+                _sumr = .0
+                _sumg = .0
+                _sumb = .0
+                
                 ti.loop_config(parallelize=True)
                 for pidx in range(rpp):
                     ray = camera.get_ray(vec2(x, y))
                     intersect = sphere.intersect(ray)
-                    hit_color = ti.Vector([0, 0, 0])
+                    hit = intersect > 0
+                    color = ti.Vector([255, 255, 255]) * hit + sky_multiplier * (1 - hit)
                     
-                    if intersect > 0:
-                        hit_color = ti.Vector([255, 255, 255])
-                        
-                    ret[x, y, pidx, 0] = ti.u8(hit_color[0] + sky_multiplier[0] * (intersect <= 0))
-                    ret[x, y, pidx, 1] = ti.u8(hit_color[1] + sky_multiplier[1] * (intersect <= 0))
-                    ret[x, y, pidx, 2] = ti.u8(hit_color[2] + sky_multiplier[2] * (intersect <= 0))
+                    _sumr += color[0]
+                    _sumg += color[1]
+                    _sumb += color[2]
+                    
+                ret[x, y, 0] = ti.u8(_sumr / rpp)
+                ret[x, y, 1] = ti.u8(_sumg / rpp)
+                ret[x, y, 2] = ti.u8(_sumb / rpp)
 
         _render(camera, self.sphere, self.rpp)
         return ret
