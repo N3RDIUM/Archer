@@ -11,18 +11,18 @@ from models.sphere import Sphere
 ti.init(ti.gpu, default_fp=ti.f32, default_ip=ti.i32)
 RESOLUTION = (1920, 1080)
 
-n = 8
+n = 16
 spheres = Sphere.field(shape=n)
 
 for i in range(n):
-    spheres[i].center = vec3(random() * 20 - 10, random() * 20 - 10, -10 + random() * 2)
+    spheres[i].center = vec3(random() * 16 - 5, random() * 9 - 5, -10 + random() * 2)
     spheres[i].radius = (random() + 1) / 4
 
 scene = Scene(
     Color(0, 95, 95),
-    4
+    128
 )
-camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 90, 0.0032)
+camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 45, 0.0032)
 ret = ti.field(dtype=ti.u8, shape=(camera.resolution[0], camera.resolution[1], 3))
 
 t = perf_counter()
