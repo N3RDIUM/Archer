@@ -11,7 +11,7 @@ from models.sphere import Sphere
 ti.init(ti.gpu, default_fp=ti.f32, default_ip=ti.i32)
 RESOLUTION = (1920, 1080)
 
-n = 16
+n = 32
 spheres = Sphere.field(shape=n)
 
 for i in range(n):
