@@ -1,3 +1,4 @@
+from random import random
 from time import perf_counter
 import numpy as np
 import taichi as ti
@@ -10,17 +11,12 @@ from models.sphere import Sphere
 ti.init(ti.gpu, default_fp=ti.f32, default_ip=ti.i32)
 RESOLUTION = (1920, 1080)
 
-spheres = Sphere.field(shape=5)
-spheres[0].center = vec3(0, 0, -5)
-spheres[0].radius = 1
-spheres[1].center = vec3(0, -4, -5)
-spheres[1].radius = 1
-spheres[2].center = vec3(4, 0, -5)
-spheres[2].radius = 1
-spheres[3].center = vec3(-4, 0, -5)
-spheres[3].radius = 1
-spheres[4].center = vec3(0, 4, -5)
-spheres[4].radius = 1
+n = 8
+spheres = Sphere.field(shape=n)
+
+for i in range(n):
+    spheres[i].center = vec3(random() * 20 - 10, random() * 20 - 10, -10 + random() * 2)
+    spheres[i].radius = (random() + 1) / 4
 
 scene = Scene(
     Color(0, 95, 95),
