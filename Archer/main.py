@@ -25,7 +25,7 @@ scene = Scene(
 camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 45, 0.0008)
 ret = ti.field(dtype=ti.u8, shape=(camera.resolution[0], camera.resolution[1], 3))
 
-gui = ti.GUI("NoRTX", res=RESOLUTION)
+gui = ti.GUI("Archer", res=RESOLUTION)
 while gui.running:
     t = perf_counter()
     img = scene.render(camera, spheres, ret)
