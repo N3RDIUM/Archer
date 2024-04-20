@@ -1,10 +1,11 @@
 import taichi as ti
-from vectors import Ray, vec3
+from vectors import Ray, Color, vec3
 
 @ti.dataclass
 class Sphere:
     center: vec3
     radius: ti.f32
+    color: Color
 
     @ti.func
     def intersect(self, ray: Ray) -> ti.f32:
@@ -13,4 +14,5 @@ class Sphere:
         b = 2.0 * ti.math.dot(oc, ray.direction)
         c = ti.math.dot(oc, oc) - self.radius * self.radius
         d = b * b - 4 * a * c
-        return d >= 0
+        solution = -b - ti.sqrt(d) / (2.0 * a)
+        return solution * d >= 0

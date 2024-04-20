@@ -22,11 +22,16 @@ class Scene:
                 for pidx in range(rpp):
                     ray = camera.get_ray(vec2(x, y))
                     intersect = False
+                    intersect_depth = 0
+                    intersect_color = Color(0, 0, 0)
                     for obj in range(n_objects):
-                        if bool(objects[obj].intersect(ray)):
+                        i = objects[obj].intersect(ray)
+                        if bool(i):
                             intersect = True
-                            break
-                    color = ti.Vector([255, 255, 255]) * intersect + sky_multiplier * (1 - intersect)
+                            if intersect_depth > i or intersect_depth == 0:
+                                intersect_depth = i
+                                intersect_color = objects[obj].color
+                    color = ti.Vector([intersect_color.r, intersect_color.g, intersect_color.b]) * intersect + sky_multiplier * (1 - intersect)
                     
                     _sumr += color[0]
                     _sumg += color[1]

@@ -16,6 +16,11 @@ spheres = Sphere.field(shape=n)
 
 for i in range(n):
     spheres[i].center = vec3(random() * 16 - 5, random() * 9 - 5, -10 + random() * 2)
+    spheres[i].color = Color(
+        (random() + 1) / 2 * 255,
+        (random() + 1) / 2 * 255,
+        (random() + 1) / 2 * 255
+    )
     spheres[i].radius = (random() + 1) / 4
 
 scene = Scene(
