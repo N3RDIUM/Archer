@@ -15,27 +15,6 @@ def normalize(v: vec3) -> vec3:
     mag = ti.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
     return (v / mag) * (mag > 1e-6)+ v * (not mag > 1e-6)
 
-@ti.func
-def rotation_matrix(axis: vec3, angle: ti.f32) -> ti.Matrix:
-    """
-    Generates a rotation matrix around a given axis.
-
-    Args:
-        axis: The axis of rotation (vec3).
-        angle: The rotation angle in radians (ti.f32).
-
-    Returns:
-        A rotation matrix (ti.mat3x3).
-    """
-    axis = normalize(axis)
-    ca = ti.cos(angle)
-    sa = ti.sin(angle)
-    ux, uy, uz = axis
-    return ti.Matrix(
-        [ca + ux * ux * (1 - ca), ux * uy * (1 - ca) - uz * sa, ux * uz * (1 - ca) + uy * sa],
-        [uy * ux * (1 - ca) + uz * sa, ca + uy * uy * (1 - ca), uy * uz * (1 - ca) - ux * sa],
-        [ux * uz * (1 - ca) - uy * sa, uy * uz * (1 - ca) + ux * sa, ca + uz * uz * (1 - ca)])
-
 @ti.dataclass
 class Camera:
     resolution: vec2
@@ -61,6 +40,10 @@ class Camera:
         uv = ndc * ti.tan(theta)
         yaw, pitch, roll = self.rotation
         
+        pitch += ti.random() * 0.1 - 0.05
+        yaw += ti.random() * 0.1 - 0.05
+        roll += ti.random() * 0.1 - 0.05
+        
         yaw = yaw * ti.math.pi / 180
         pitch = pitch * ti.math.pi / 180
         roll = roll * ti.math.pi / 180
@@ -85,10 +68,4 @@ class Camera:
         uv_rotated = world_to_camera @ vec3(uv.x, uv.y, -1.0)
         origin = self.position
         direction = normalize(uv_rotated)
-        
-        # Dither
-        origin[0] += (ti.random() - 0.5) / 100
-        origin[1] += (ti.random() - 0.5) / 100
-        origin[2] += (ti.random() - 0.5) / 100
-        
         return Ray(origin, direction)
