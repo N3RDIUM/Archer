@@ -22,7 +22,7 @@ class Scene:
                 for pidx in range(rpp):
                     ray = camera.get_ray(vec2(x, y))
                     intersect = False
-                    intersect_depth = 0
+                    intersect_depth = 0.
                     intersect_color = Color(0, 0, 0)
                     for obj in range(n_objects):
                         i = objects[obj].intersect(ray)

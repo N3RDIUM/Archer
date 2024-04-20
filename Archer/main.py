@@ -19,7 +19,7 @@ spheres[0].color = Color(
 spheres[0].radius = 1
 
 scene = Scene(
-    Color(0, 128, 128),
+    Color(0, 170, 160),
     8
 )
 camera = Camera(vec2(RESOLUTION[0], RESOLUTION[1]), vec3(0, 0, 0), vec3(0, 0, 0), 45, 0.0008)
