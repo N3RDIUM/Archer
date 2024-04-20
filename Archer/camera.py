@@ -33,33 +33,24 @@ class Camera:
         screen_y = ndc_y * ti.tan(self.fov / 2)
 
         direction = vec3(screen_x, screen_y, -1.0)
-        direction = direction + vec3(ti.random(), ti.random(), ti.random()) * self.dither
-        
-        sx, cx = ti.sin(self.rotation.x), ti.cos(self.rotation.x)
-        sy, cy = ti.sin(self.rotation.y), ti.cos(self.rotation.y)
-        sz, cz = ti.sin(self.rotation.z), ti.cos(self.rotation.z)
+        random_offset = vec3(ti.random(), ti.random(), ti.random()) * self.dither
+        direction += random_offset
 
-        rx = ti.Matrix([
-            [1, 0, 0],
-            [0, cx, -sx],
-            [0, sx, cx]
+        rotation_matrix = ti.Matrix([
+            [ti.cos(self.rotation.y) * ti.cos(self.rotation.z),
+             ti.sin(self.rotation.x) * ti.sin(self.rotation.y) * ti.cos(self.rotation.z) - ti.cos(self.rotation.x) * ti.sin(self.rotation.z),
+             ti.cos(self.rotation.x) * ti.sin(self.rotation.y) * ti.cos(self.rotation.z) + ti.sin(self.rotation.x) * ti.sin(self.rotation.z)],
+
+            [ti.cos(self.rotation.y) * ti.sin(self.rotation.z),
+             ti.sin(self.rotation.x) * ti.sin(self.rotation.y) * ti.sin(self.rotation.z) + ti.cos(self.rotation.x) * ti.cos(self.rotation.z),
+             ti.cos(self.rotation.x) * ti.sin(self.rotation.y) * ti.sin(self.rotation.z) - ti.sin(self.rotation.x) * ti.cos(self.rotation.z)],
+
+            [-ti.sin(self.rotation.y),
+             ti.sin(self.rotation.x) * ti.cos(self.rotation.y),
+             ti.cos(self.rotation.x) * ti.cos(self.rotation.y)]
         ])
 
-        ry = ti.Matrix([
-            [cy, 0, sy],
-            [0, 1, 0],
-            [-sy, 0, cy]
-        ])
-
-        rz = ti.Matrix([
-            [cz, -sz, 0],
-            [sz, cz, 0],
-            [0, 0, 1]
-        ])
-
-        direction = rx @ direction
-        direction = ry @ direction
-        direction = rz @ direction
+        direction = rotation_matrix @ direction
         direction = normalize(direction)
         
-        return Ray(self.position + vec3(ti.random(), ti.random(), ti.random()) * self.dither, direction)
+        return Ray(self.position + random_offset, direction)
