@@ -1,3 +1,4 @@
+# Imports
 import taichi as ti
 from camera import Camera
 from vectors import vec2, Color

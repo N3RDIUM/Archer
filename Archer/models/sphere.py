@@ -1,3 +1,4 @@
+# Imports
 import taichi as ti
 from vectors import Ray, Color, vec3
 

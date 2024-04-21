@@ -1,3 +1,4 @@
+# Imports
 import taichi as ti
 from math import sin
 from scene import Scene
@@ -8,6 +9,7 @@ from models.sphere import Sphere
 from vectors import vec3, vec2, Color
 
 # Initialize Taichi with the GPU
+# If no GPU is detected, it automatically falls back to CPU
 ti.init(ti.gpu)
 
 # Define the resolution of the output image

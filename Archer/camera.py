@@ -1,3 +1,4 @@
+# Imports
 import taichi as ti
 from vectors import Ray, vec3, vec2, normalize
 
