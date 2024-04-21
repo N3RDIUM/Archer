@@ -16,3 +16,6 @@ __Currently working on:__ Devlog 1 (code completed, video creation in progress)
 - [ ] Skybox [Devlog 2a]
 - [ ] Reflections [Devlog 2b]
 - [ ] Refraction [Devlog 3]
+
+## Thanks and Citations
+[_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html) for showing how to do stuff
