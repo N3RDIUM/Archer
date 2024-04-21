@@ -2,6 +2,11 @@
 A ray tracing engine built to run with a decent frame rate even on CPU, allowing for realtime raytracing applications without GPUs.
 All the code in this repo is heavily commented so that it is easy to follow.
 
+## Latest render
+This image shows what the engine is capable of as well as what I've been up to recently ;)
+
+![Latest render](render.png)
+
 ## Roadmap
 *TODO: Move the channel assets to a dedicated repo*
 
