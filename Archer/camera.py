@@ -1,19 +1,5 @@
 import taichi as ti
-from vectors import Ray, vec3, vec2
-
-@ti.func
-def normalize(v: vec3) -> vec3:
-    """
-    Normalizes a vector to have a length of 1.
-
-    Args:
-        v: The vector to normalize (ti.vec3).
-
-    Returns:
-        A normalized vector (ti.vec3).
-    """
-    mag = ti.sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
-    return v / mag
+from vectors import Ray, vec3, vec2, normalize
 
 @ti.dataclass
 class Camera:

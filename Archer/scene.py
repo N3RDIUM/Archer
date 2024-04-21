@@ -18,11 +18,14 @@ class Scene:
                 _sumg = .0
                 _sumb = .0
                 
+                ti.loop_config(parallelize=True)
                 for pidx in range(rpp):
                     ray = camera.get_ray(vec2(x, y))
                     intersect = False
                     intersect_depth = 0.
                     intersect_color = Color(0, 0, 0)
+                    
+                    ti.loop_config(parallelize=True)
                     for obj in range(n_objects):
                         i = objects[obj].intersect(ray)
                         if bool(i):
