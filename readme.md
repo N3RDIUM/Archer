@@ -5,6 +5,8 @@ All the code in this repo is heavily commented so that it is easy to follow.
 ## Roadmap
 *TODO: Move the channel assets to a dedicated repo*
 
+Currently working on: Devlog 1 (code completed, video creation in progress)
+
 - [x] Basic solid sphere scene with camera implementation [Devlog 1]
 - [ ] Skybox [Devlog 2a]
 - [ ] Reflections [Devlog 2b]
