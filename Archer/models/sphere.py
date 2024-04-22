@@ -36,4 +36,4 @@ class Sphere:
         # If it's zero, the ray touches the sphere at one point.
         # If it's positive, the ray touches the sphere at two points.
         # The smaller root is the nearest intersection point, so we return that one.
-        return (-b - ti.sqrt(d)) / (2.0 * a) * d >= 0  # The distance at which the ray intersects the sphere, or -1 if no intersection.
+        return (-b - ti.sqrt(d)) / (2.0 * a) * d >= 0 + -1 * d < 0  # The distance at which the ray intersects the sphere, or -1 if no intersection.
