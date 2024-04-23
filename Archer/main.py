@@ -13,26 +13,18 @@ from vectors import vec3, vec2, Color
 ti.init(ti.gpu)
 
 # Define the resolution of the output image
-RESOLUTION = (1920, 1080)
+RESOLUTION = (1920 // 2, 1080)
 
 # Create a field of Sphere objects
-spheres = Sphere.field(shape=1)
-
-# Set the center and radius of the first sphere
-spheres[0].center = vec3(0, 0, -5)  # Center
-spheres[0].radius = 1  # Radius
-
-# Set the color of the first sphere using random values
-spheres[0].color = Color(
-    (random() + 1) / 2 * 255,  # Red
-    (random() + 1) / 2 * 255,  # Green
-    (random() + 1) / 2 * 255   # Blue
-)
+spheres = [
+    Sphere(vec3(0, 0, -5), 0.1, Color(255, 255, 255)),
+    Sphere(vec3(0, 0, -10), 1, Color(255, 0, 0))
+]
 
 # Create a Scene object with a background color and samples per pixel
 scene = Scene(
     Color(0, 170, 160),  # Background color
-    8  # Samples per pixel
+    1  # Samples per pixel
 )
 
 # Create a Camera object with a resolution, position, rotation, and field of view

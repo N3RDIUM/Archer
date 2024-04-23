@@ -57,7 +57,7 @@ class Camera:
              sinx * siny * sinz + cosx * cosz,
              cosx * siny * sinz - sinx * cosz],
 
-            [-siny,                         # Row 3
+            [-siny,                        # Row 3
              sinx * cosy,
              cosx * cosy]
         ])

@@ -16,7 +16,6 @@ class Scene:
         Render the scene
         """
         sky_multiplier = ti.Vector([self.sky.r, self.sky.g, self.sky.b])
-        n_objects = objects.shape[0]
         rpp = self.rpp
         
         @ti.kernel
@@ -43,25 +42,25 @@ class Scene:
                     ray = camera.get_ray(vec2(x, y))
                     
                     intersect = False  # Flag to indicate if a ray intersects with an object
-                    intersect_depth = 0.  # Depth of intersection
-                    intersect_color = Color(0, 0, 0)  # Color of the intersected object
+                    nearest_depth = 0.  # Depth of intersection
+                    nearest_color = Color(0, 0, 0)  # Color of the intersected object
                     
                     # Loop over each object in the scene to find intersection
                     ti.loop_config(parallelize=True)
-                    for obj in range(n_objects):
+                    for obj in ti.static(range(len(objects))):
                         # Get the intersection point of the ray and the object
                         i = objects[obj].intersect(ray)
                         
                         # If an intersection is found
-                        if bool(i):
+                        if int(i) >= 0:
                             intersect = True
                             # Update the intersection if the current intersection is closer
-                            if intersect_depth > i or intersect_depth == 0:
-                                intersect_depth = i
-                                intersect_color = objects[obj].color
+                            if nearest_depth > i or nearest_depth == 0:
+                                nearest_depth = i
+                                nearest_color = objects[obj].color
                     
                     # Calculate the color of the pixel based on intersection
-                    color = ti.Vector([intersect_color.r, intersect_color.g, intersect_color.b]) * intersect + sky_multiplier * (1 - intersect)
+                    color = ti.Vector([nearest_color.r, nearest_color.g, nearest_color.b]) * intersect + sky_multiplier * (1 - intersect)
                     
                     # Accumulate the color component of each pixel
                     _sumr += color[0]
