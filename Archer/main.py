@@ -13,13 +13,27 @@ from vectors import vec3, vec2, Color
 ti.init(ti.gpu)
 
 # Define the resolution of the output image
-RESOLUTION = (1920 // 2, 1080)
+RESOLUTION = (1920, 1080)
 
 # Create a field of Sphere objects
-spheres = [
-    Sphere(vec3(0, 0, -5), 0.1, Color(255, 255, 255)),
-    Sphere(vec3(0, 0, -10), 1, Color(255, 0, 0))
-]
+objects = []
+
+for i in range(8):
+    objects.append(
+        Sphere(
+            vec3(
+                random() * 5 - 2.5,
+                random() * 5 - 2.5,
+                random() - 10
+            ),
+            0.5 + random() / 4,
+            Color(
+                (random() + 1) / 2 * 255,
+                (random() + 1) / 2 * 255,
+                (random() + 1) / 2 * 255,
+            )
+        )
+    )
 
 # Create a Scene object with a background color and samples per pixel
 scene = Scene(
@@ -48,7 +62,7 @@ while gui.running:
     t = perf_counter()
     
     # Render the scene with the camera and spheres
-    img = scene.render(camera, spheres, ret)
+    img = scene.render(camera, objects, ret)
     
     # Print the rendering time and the number of rays traced
     print(f"\rRender took {perf_counter() - t}s ({1 / (perf_counter() - t)} FPS, {img.shape[0] * img.shape[1] * scene.rpp} rays)", end="")
