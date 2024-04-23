@@ -17,9 +17,10 @@ class Scene:
         """
         sky_multiplier = ti.Vector([self.sky.r, self.sky.g, self.sky.b])
         n_objects = objects.shape[0]
+        rpp = self.rpp
         
         @ti.kernel
-        def _render(camera: Camera, rpp: ti.u8):
+        def _render():
             """
             The kernel function which does the actual ray tracing.
             This function renders the scene by tracing rays from the camera and
@@ -73,5 +74,5 @@ class Scene:
                 ret[x, y, 2] = ti.u8(_sumb / rpp)
 
         # Render the scene and return the image
-        _render(camera, self.rpp)
+        _render()
         return ret
