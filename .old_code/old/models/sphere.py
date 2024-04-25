@@ -9,7 +9,6 @@ class Sphere:
     """
     center: vec3
     radius: ti.f32
-    color: Color
 
     @ti.func
     def intersect(self, ray: Ray) -> ti.f32:

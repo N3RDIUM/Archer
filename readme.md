@@ -9,7 +9,7 @@ This image shows what the engine is capable of as well as what I've been up to r
 ![Latest render](render.png)
 
 ## Roadmap
-*TODO: Move the channel assets to a dedicated repo*
+When complete, it will have a three.js-like usage format.
 
 __Currently working on:__ Devlog 1 (code completed, video creation in progress)
 
