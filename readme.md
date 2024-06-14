@@ -2,21 +2,11 @@
 
 ![Archer Logo](ArcherLogo.png)
 A rusty ray tracing engine built to run with a decent frame rate even on CPU, allowing for realtime raytracing applications without GPUs.
-All the code in this repo is heavily commented so that it is easy to follow.
+All the code in this repo is heavily commented so that it is easy to follow. When complete, it will have a three.js-like usage format.
 
-## Latest render
+__Currently working on:__ A basic sphere scene
 
-This image shows what the engine is capable of as well as what I've been up to recently ;)
-
-![Latest render](render.png)
-
-## Roadmap
-
-When complete, it will have a three.js-like usage format.
-
-__Currently working on:__ Rewriting the entire project in Rust
-
-- [x] Basic solid sphere scene with camera implementation [Devlog 1]
+- [ ] Basic solid sphere scene with camera implementation [Devlog 1]
 - [ ] Skybox [Devlog 2a]
 - [ ] Reflections [Devlog 2b]
 - [ ] Refraction [Devlog 3]
