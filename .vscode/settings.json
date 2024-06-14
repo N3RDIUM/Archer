@@ -1,6 +1,0 @@
-{
-    "rust-analyzer.linkedProjects": [
-        "./archer/Cargo.toml",
-        "./Cargo.toml",
-    ]
-}
