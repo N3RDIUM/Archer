@@ -34,10 +34,10 @@ fn main() {
         for y in 0..RESOLUTION.y as i32{
             let _r: Ray = do_it(&cam, x, y);
 
-            // I did not believe that it was so fast
+            // I could not believe that it was so fast
             // So I just decided to print stuff out temporarily
             // Yes, it is as fast as it runs.
-            // println!("Ray {r:?}");
+            // println!("Ray {_r:?}");
         }
     }
 
