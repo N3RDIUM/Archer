@@ -1,3 +1,6 @@
+use std::time::Instant;
+use image::{ImageBuffer, RgbImage};
+
 use archer::camera::Camera;
 use archer::vectors;
 use vectors::Vec2;
@@ -10,7 +13,10 @@ fn do_it(camera: &Camera, x: i32, y: i32) -> Ray {
 
 fn main() {
     const RESOLUTION: Vec2 = Vec2 { x: 1920.0, y: 1080.0 };
+    let mut image: RgbImage = ImageBuffer::new(RESOLUTION.x as u32, RESOLUTION.y as u32);
 
+    // TODO: Create a nice ::new() impl method for Camera...
+    // TODO: ...so that we dont have to deal with this mess here.
     let mut cam = Camera {
        resolution: RESOLUTION,
        focal_length: 1.0,
@@ -29,17 +35,19 @@ fn main() {
     };
     cam.update();
     println!("Current camera state: {cam:?}");
+    
+    let now = Instant::now();
 
     for x in 0..RESOLUTION.x as i32 {
         for y in 0..RESOLUTION.y as i32{
-            let _r: Ray = do_it(&cam, x, y);
-
-            // I could not believe that it was so fast
-            // So I just decided to print stuff out temporarily
-            // Yes, it is as fast as it runs.
-            // println!("Ray {_r:?}");
+            let _r: Ray = do_it(&cam, x, y);      
+            *image.get_pixel_mut(x as u32, y as u32) = image::Rgb([255; 3]);
         }
     }
+    
+    image.save("output.png").unwrap();
 
-    println!("I survived compilation!");
+    let elapsed = now.elapsed().as_secs_f64();
+    let fps: f64 = 1.0 / elapsed;
+    println!("One frame took {elapsed} seconds. That's {fps} FPS!");
 }
