@@ -52,7 +52,7 @@ impl Camera {
             + Vec3::fill(0.5) * (self.pixel_delta_u + self.pixel_delta_v);
     }
 
-    pub fn get_ray(self, pixel: Vec2) -> Ray {
+    pub fn get_ray(&self, pixel: Vec2) -> Ray {
         let pixel_center: Vec3 = self.top_left_location 
             + Vec3::fill(pixel.x) * self.pixel_delta_u
             + Vec3::fill(pixel.y) * self.pixel_delta_v;
