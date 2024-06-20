@@ -6,10 +6,13 @@ All the code in this repo is heavily commented so that it is easy to follow. Whe
 
 __Currently working on:__ A basic sphere scene
 
-- [ ] Basic solid sphere scene with camera implementation [Devlog 1]
+- [ ] Basic Sphere [Devlog 1]
 - [ ] Skybox [Devlog 2a]
 - [ ] Reflections [Devlog 2b]
 - [ ] Refraction [Devlog 3]
+- [ ] Optimization [Devlog 4a]
+- [ ] BVH Implementation [Devlog 4b]
+- [ ] Restir Implementation [Devlog 4c]
 
 ## Thanks and Citations
 
