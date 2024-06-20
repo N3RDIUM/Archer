@@ -22,6 +22,25 @@ pub struct Camera {
 }
 
 impl Camera {
+    pub fn new(resolution: [usize; 2]) -> Camera {
+       return Camera {
+            resolution: Vec2 { x: resolution[0] as f32, y: resolution[1] as f32 },
+            focal_length: 1.0,
+            viewport_height: 2.0,
+            position: Vec3::fill(0.0),
+            rotation: Vec3::fill(0.0),
+    
+            aspect: 0.0,
+            viewport_width: 1.0,
+            viewport_u: Vec3::fill(0.0),
+            viewport_v: Vec3::fill(0.0),
+            pixel_delta_u: Vec3::fill(0.0),
+            pixel_delta_v: Vec3::fill(0.0),
+            top_left: Vec3::fill(0.0),
+            top_left_location: Vec3::fill(0.0)
+        }; 
+    }
+
     pub fn update(&mut self) {
         self.aspect = self.resolution.x / self.resolution.y;
         self.viewport_width = self.viewport_height * self.aspect;
