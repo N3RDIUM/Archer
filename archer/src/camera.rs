@@ -22,7 +22,7 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(resolution: [usize; 2]) -> Camera {
+    pub fn new(resolution: [u32; 2]) -> Camera {
        return Camera {
             resolution: Vec2 { x: resolution[0] as f32, y: resolution[1] as f32 },
             focal_length: 1.0,
