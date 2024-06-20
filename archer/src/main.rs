@@ -1,15 +1,30 @@
-use image::{ImageBuffer, RgbImage};
-
-// Constants
-const RESOLUTION: [u32; 2] = [10, 10];
+use archer::camera::Camera;
+use archer::vectors;
+use vectors::Vec2;
+use vectors::Vec3;
+use vectors::Ray;
 
 fn main() {
-    // Make the image
-    let mut image: RgbImage = ImageBuffer::new(RESOLUTION[0], RESOLUTION[1]);
+    let mut cam = Camera {
+       resolution: Vec2 { x: 1280.0, y: 720.0 },
+       focal_length: 1.0,
+       viewport_height: 2.0,
+       position: Vec3::fill(0.0),
+       rotation: Vec3::fill(0.0),
 
-    // Modify it
-    *image.get_pixel_mut(5, 5) = image::Rgb([255; 3]);
+       aspect: 0.0,
+       viewport_width: 1.0,
+       viewport_u: Vec3::fill(0.0),
+       viewport_v: Vec3::fill(0.0),
+       pixel_delta_u: Vec3::fill(0.0),
+       pixel_delta_v: Vec3::fill(0.0),
+       top_left: Vec3::fill(0.0),
+       top_left_location: Vec3::fill(0.0)
+    };
+    cam.update();
+    println!("Current camera state: {cam:?}");
 
-    // Write the image!
-    image.save("output.png").unwrap();
+    let ray: Ray = cam.get_ray(Vec2::fill(0.0));
+    println!("The direction for the top-left pixel is: {ray:?}");
+    println!("I survived compilation!");
 }
