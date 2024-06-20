@@ -66,6 +66,10 @@ impl Vec2 {
         let len_squared: f32 = self.x * self.x + self.y * self.y;
         return len_squared.sqrt()
     }
+
+    pub fn normalize(&self) -> Vec2 {
+        return *self / Vec2::fill(self.length());
+    }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -135,6 +139,10 @@ impl Vec3 {
     pub fn length(&self) -> f32 {
         let len_squared: f32 = self.x * self.x + self.y * self.y + self.z * self.z;
         return len_squared.sqrt();
+    }
+
+    pub fn normalize(&self) -> Vec3 {
+        return *self / Vec3::fill(self.length());
     }
 }
 
