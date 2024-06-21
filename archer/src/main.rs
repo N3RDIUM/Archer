@@ -2,10 +2,10 @@ use std::time::Instant;
 use image::{ImageBuffer, RgbImage};
 
 use archer::camera::Camera;
+use archer::ray::Ray;
 use archer::vectors;
 use vectors::Vec2;
 use vectors::Vec3;
-use vectors::Ray;
 
 fn do_it(camera: &Camera, x: u32, y: u32) -> Ray {
     return camera.get_ray(Vec2 { x: x as f32, y: y as f32 })
@@ -18,10 +18,8 @@ fn main() {
 
     let mut image: RgbImage = ImageBuffer::new(RESOLUTION[0], RESOLUTION[1]);
     let mut cam = Camera::new(RESOLUTION);
-
     cam.update();
-    println!("Current camera state: {cam:?}");
-    
+
     let now = Instant::now();
 
     for x in 0..RESOLUTION[0] {
