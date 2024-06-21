@@ -14,6 +14,9 @@ __Currently working on:__ A basic sphere scene
 - [ ] BVH Implementation [Devlog 4b]
 - [ ] Restir Implementation [Devlog 4c]
 
+## Latest Render
+![Latest render](./archer/output.png)
+
 ## Thanks and Citations
 
 [_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html) for showing how to do stuff
