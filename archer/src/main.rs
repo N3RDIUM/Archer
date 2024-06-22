@@ -1,6 +1,8 @@
 use std::time::Instant;
 use image::{ImageBuffer, RgbImage};
 
+use archer::models::sphere::Sphere;
+use archer::models::base::Model;
 use archer::camera::Camera;
 use archer::ray::Ray;
 use archer::vectors;
@@ -20,6 +22,11 @@ fn main() {
     let mut cam = Camera::new(RESOLUTION);
     cam.update();
 
+    let sphere: Sphere = Sphere {
+        radius: 0.5,
+        position: Vec3 { x: 0.0, y: 0.0, z: -1.0 }
+    };
+
     let now = Instant::now();
 
     for x in 0..RESOLUTION[0] {
@@ -29,15 +36,22 @@ fn main() {
             let norm = ray.direction.normalize();
             let a = 0.5 * (norm.y + 1.0);
             let color: Vec3 = Vec3::fill(1.0 - a) * white + Vec3::fill(a) * blue;
-            let /* mut */ final_color: [u8; 3] = [color.x as u8, color.y as u8, color.z as u8];
+            let mut final_color: [u8; 3] = [color.x as u8, color.y as u8, color.z as u8];
+            
+            let intersect = sphere.intersect(ray);
+            if intersect >= 0.0 {
+                final_color = [255, 0, 0];
+            };
 
             *image.get_pixel_mut(x, y) = image::Rgb(final_color);
         }
     }
-    
-    image.save("output.png").unwrap();
 
     let elapsed = now.elapsed().as_secs_f64();
     let fps: f64 = 1.0 / elapsed;
     println!("One frame took {elapsed} seconds. That's {fps} FPS!");
+    
+    println!("Saving image to `output.png`...");
+    image.save("output.png").unwrap();
+    println!("Image saved successfully! Exiting now.");
 }

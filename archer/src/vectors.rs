@@ -146,3 +146,9 @@ impl Vec3 {
     }
 }
 
+pub fn dot(a: Vec3, b: Vec3) -> f32 {
+    return a.x * b.x
+        + a.y * b.y
+        + a.z * b.z;
+}
+
