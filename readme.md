@@ -6,7 +6,7 @@ All the code in this repo is heavily commented so that it is easy to follow. Whe
 
 __Currently working on:__ A basic sphere scene
 
-- [ ] Basic Sphere [Devlog 1]
+- [x] Basic Sphere [Devlog 1]
 - [ ] Skybox [Devlog 2a]
 - [ ] Reflections [Devlog 2b]
 - [ ] Refraction [Devlog 3]
