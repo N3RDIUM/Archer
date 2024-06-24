@@ -72,7 +72,7 @@ impl Vec2 {
     }
 
     pub fn is_null(&self) -> bool {
-        return *self == Vec2::fill(f32::NAN);
+        return self.x.is_nan() || self.y.is_nan();
     }
 }
 
@@ -150,7 +150,7 @@ impl Vec3 {
     }
 
     pub fn is_null(&self) -> bool {
-        return *self == Vec3::fill(f32::NAN);
+        return self.x.is_nan() || self.y.is_nan() || self.z.is_nan();
     }
 }
 

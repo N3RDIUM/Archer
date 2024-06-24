@@ -16,11 +16,10 @@ impl Geometry for Sphere {
         let c: f32 = dot(oc, oc) - self.radius * self.radius;
         let discriminant: f32 = b*b - 4.0*a*c;
         
-        let mut ret = Vec3::fill(f32::NAN);
+        let ret = Vec3::fill(f32::NAN);
         if discriminant >= 0.0 {
-           ret = incoming.position_at(discriminant); 
+           return incoming.position_at(discriminant); 
         } 
-
         return ret;
     }
 }
