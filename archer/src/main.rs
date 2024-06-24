@@ -39,8 +39,8 @@ fn main() {
             *pixel = Rgb([color.x as u8, color.y as u8, color.z as u8]);
             
             let geometry = object.geometry.as_ref();
-            let intersect = geometry.intersect(ray);
-            if intersect >= 0.0 {
+            let intersect_point = geometry.intersect(ray);
+            if !intersect_point.is_null() {
                 *pixel = Rgb([255, 0, 0]);
             };
         });

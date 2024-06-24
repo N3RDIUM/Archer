@@ -9,13 +9,19 @@ pub struct Sphere {
 }
 
 impl Geometry for Sphere {
-    fn intersect(&self, incoming: Ray) -> f32 {
+    fn intersect(&self, incoming: Ray) -> Vec3 {
         let oc: Vec3 = self.position - incoming.origin;
         let a: f32 = dot(incoming.direction, incoming.direction);
         let b: f32 = -2.0 * dot(incoming.direction, oc);
         let c: f32 = dot(oc, oc) - self.radius * self.radius;
         let discriminant: f32 = b*b - 4.0*a*c;
-        return discriminant;
+        
+        let mut ret = Vec3::fill(f32::NAN);
+        if discriminant >= 0.0 {
+           ret = incoming.position_at(discriminant); 
+        } 
+
+        return ret;
     }
 }
 
