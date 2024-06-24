@@ -1,4 +1,4 @@
-use crate::models::base::Model;
+use crate::geometries::base::Geometry;
 use crate::vectors::Vec3;
 use crate::vectors::dot;
 use crate::ray::Ray;
@@ -8,7 +8,7 @@ pub struct Sphere {
     pub position: Vec3
 }
 
-impl Model for Sphere {
+impl Geometry for Sphere {
     fn intersect(&self, incoming: Ray) -> f32 {
         let oc: Vec3 = self.position - incoming.origin;
         let a: f32 = dot(incoming.direction, incoming.direction);

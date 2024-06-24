@@ -1,5 +1,5 @@
 use crate::ray::Ray;
 
-pub trait Model {
+pub trait Geometry {
     fn intersect(&self, incoming: Ray) -> f32;
 }

@@ -2,8 +2,8 @@ use std::time::Instant;
 use rayon::prelude::*;
 use image::{RgbImage, Rgb};
 
-use archer::models::sphere::Sphere;
-use archer::models::base::Model;
+use archer::geometries::sphere::Sphere;
+use archer::scene_object::SceneObject;
 use archer::camera::Camera;
 use archer::ray::Ray;
 use archer::vectors;
@@ -23,6 +23,9 @@ fn main() {
         radius: 0.5,
         position: Vec3 { x: 0.0, y: 0.0, z: -1.0 }
     };
+    let object: SceneObject = SceneObject {
+        geometry: Box::new(sphere),
+    };
 
     let now = Instant::now();
 
@@ -35,7 +38,8 @@ fn main() {
             let color: Vec3 = Vec3::fill(1.0 - a) * white + Vec3::fill(a) * blue;
             *pixel = Rgb([color.x as u8, color.y as u8, color.z as u8]);
             
-            let intersect = sphere.intersect(ray);
+            let geometry = object.geometry.as_ref();
+            let intersect = geometry.intersect(ray);
             if intersect >= 0.0 {
                 *pixel = Rgb([255, 0, 0]);
             };
