@@ -28,7 +28,7 @@ fn main() {
         position: Vec3 { x: 0.0, y: 0.0, z: -1.0 }
     };
     let red: SolidColor = SolidColor {
-        color: Vec3 { x: 255.0, y: 0.0, z: 0.0 }
+        color: [255, 0, 0]
     };
 
     let object: SceneObject = SceneObject {
@@ -75,8 +75,8 @@ fn main() {
             };
             
             for hit in hit_info.iter() {
-                let _material = hit.material.as_ref();
-                *pixel = Rgb([255 as i32, 0, 0]);
+                let material = hit.material.as_ref();
+                *pixel = Rgb(material.add_color(hit.incoming, hit.hit_point, hit.normal));
             }
         });
 
