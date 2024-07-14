@@ -3,7 +3,7 @@ use crate::vectors::Vec3;
 
 pub trait Material {
     fn bounce(&self, incoming: Ray, hit_point: Vec3, normal: Vec3) -> Ray;
-    // TODO: Add an add_color fn
+    fn add_color(&self, incoming: Ray, hit_point: Vec3, normal: Vec3) -> [u8; 3];
 }
 
 pub struct BaseMaterial {}
