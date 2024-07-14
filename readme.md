@@ -4,11 +4,10 @@
 A rusty ray tracing engine built to run with a decent frame rate even on CPU, allowing for realtime raytracing applications without GPUs.
 All the code in this repo is heavily commented so that it is easy to follow. When complete, it will have a three.js-like usage format.
 
-__Currently working on:__ A basic sphere scene
+__Currently working on:__ Multiple bounces, lambertian material
 
 - [x] Basic Sphere [Devlog 1]
-- [ ] Skybox [Devlog 2a]
-- [ ] Reflections [Devlog 2b]
+- [ ] Multiple Reflections [Devlog 2]
 - [ ] Refraction [Devlog 3]
 - [ ] Optimization [Devlog 4a]
 - [ ] BVH Implementation [Devlog 4b]
