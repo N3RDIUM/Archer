@@ -18,4 +18,4 @@ __Currently working on:__ Multiple bounces, lambertian material
 
 ## Thanks and Citations
 
-[_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html) for showing how to do stuff
+[_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html) for helping kick-start the project
