@@ -35,7 +35,7 @@ impl Sub for Vec2 {
 impl Mul for Vec2 {
     type Output = Self;
 
-    fn mul(self, other:Self) -> Self {
+    fn mul(self, other: Self) -> Self {
         Self {
             x: self.x * other.x,
             y: self.y * other.y
@@ -55,6 +55,10 @@ impl Div for Vec2 {
 }
 
 impl Vec2 {
+    pub fn new_empty() -> Vec2 {
+        return Vec2::fill(f32::NAN)
+    }
+
     pub fn fill(value: f32) -> Vec2 {
         Vec2 {
             x: value,
@@ -71,7 +75,7 @@ impl Vec2 {
         return *self / Vec2::fill(self.length());
     }
 
-    pub fn is_null(&self) -> bool {
+    pub fn is_nan(&self) -> bool {
         return self.x.is_nan() || self.y.is_nan();
     }
 }
@@ -132,6 +136,10 @@ impl Div for Vec3 {
 }
 
 impl Vec3 {
+    pub fn new_empty() -> Vec3 {
+       return Vec3::fill(f32::NAN);
+    }
+
     pub fn fill(value: f32) -> Vec3 {
         Vec3 {
             x: value,
@@ -149,7 +157,7 @@ impl Vec3 {
         return *self / Vec3::fill(self.length());
     }
 
-    pub fn is_null(&self) -> bool {
+    pub fn is_nan(&self) -> bool {
         return self.x.is_nan() || self.y.is_nan() || self.z.is_nan();
     }
 }

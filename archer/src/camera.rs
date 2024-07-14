@@ -11,14 +11,14 @@ pub struct Camera {
     pub rotation: Vec3,
     
     // These things are set by the `update` func!
-    pub aspect: f32,
-    pub viewport_width: f32,
-    pub viewport_u: Vec3,
-    pub viewport_v: Vec3,
-    pub pixel_delta_u: Vec3,
-    pub pixel_delta_v: Vec3,
-    pub top_left: Vec3,
-    pub top_left_location: Vec3
+    aspect: f32,
+    viewport_width: f32,
+    viewport_u: Vec3,
+    viewport_v: Vec3,
+    pixel_delta_u: Vec3,
+    pixel_delta_v: Vec3,
+    top_left: Vec3,
+    top_left_location: Vec3,
 }
 
 impl Camera {
