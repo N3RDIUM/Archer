@@ -75,7 +75,7 @@ fn main() {
             };
             
             for hit in hit_info.iter() {
-                let material = hit.material.as_ref();
+                let _material = hit.material.as_ref();
                 *pixel = Rgb([255, 0, 0]);
             }
         });
