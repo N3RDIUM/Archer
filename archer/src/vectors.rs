@@ -1,13 +1,13 @@
 use std::ops::Add;
-use std::ops::Sub;
-use std::ops::Mul;
 use std::ops::Div;
+use std::ops::Mul;
+use std::ops::Sub;
 
 // Vector structs
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec2 {
-    pub x: f32,
-    pub y: f32
+    pub x: f64,
+    pub y: f64,
 }
 
 impl Add for Vec2 {
@@ -16,7 +16,7 @@ impl Add for Vec2 {
     fn add(self, other: Self) -> Self {
         Self {
             x: self.x + other.x,
-            y: self.y + other.y
+            y: self.y + other.y,
         }
     }
 }
@@ -27,7 +27,7 @@ impl Sub for Vec2 {
     fn sub(self, other: Self) -> Self {
         Self {
             x: self.x - other.x,
-            y: self.y - other.y
+            y: self.y - other.y,
         }
     }
 }
@@ -38,7 +38,7 @@ impl Mul for Vec2 {
     fn mul(self, other: Self) -> Self {
         Self {
             x: self.x * other.x,
-            y: self.y * other.y
+            y: self.y * other.y,
         }
     }
 }
@@ -49,26 +49,23 @@ impl Div for Vec2 {
     fn div(self, other: Self) -> Self {
         Self {
             x: self.x / other.x,
-            y: self.y / other.y
+            y: self.y / other.y,
         }
     }
 }
 
 impl Vec2 {
     pub fn new_empty() -> Vec2 {
-        return Vec2::fill(f32::NAN)
+        return Vec2::fill(f64::NAN);
     }
 
-    pub fn fill(value: f32) -> Vec2 {
-        Vec2 {
-            x: value,
-            y: value
-        }
+    pub fn fill(value: f64) -> Vec2 {
+        Vec2 { x: value, y: value }
     }
 
-    pub fn length(&self) -> f32 {
-        let len_squared: f32 = self.x * self.x + self.y * self.y;
-        return len_squared.sqrt()
+    pub fn length(&self) -> f64 {
+        let len_squared: f64 = self.x * self.x + self.y * self.y;
+        return len_squared.sqrt();
     }
 
     pub fn normalize(&self) -> Vec2 {
@@ -82,9 +79,9 @@ impl Vec2 {
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec3 {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 impl Add for Vec3 {
@@ -94,7 +91,7 @@ impl Add for Vec3 {
         Self {
             x: self.x + other.x,
             y: self.y + other.y,
-            z: self.z + other.z
+            z: self.z + other.z,
         }
     }
 }
@@ -106,7 +103,7 @@ impl Sub for Vec3 {
         Self {
             x: self.x - other.x,
             y: self.y - other.y,
-            z: self.z - other.z
+            z: self.z - other.z,
         }
     }
 }
@@ -114,11 +111,11 @@ impl Sub for Vec3 {
 impl Mul for Vec3 {
     type Output = Self;
 
-    fn mul(self, other:Self) -> Self {
+    fn mul(self, other: Self) -> Self {
         Self {
             x: self.x * other.x,
             y: self.y * other.y,
-            z: self.z * other.z
+            z: self.z * other.z,
         }
     }
 }
@@ -130,26 +127,26 @@ impl Div for Vec3 {
         Self {
             x: self.x / other.x,
             y: self.y / other.y,
-            z: self.z / other.z
+            z: self.z / other.z,
         }
     }
 }
 
 impl Vec3 {
     pub fn new_empty() -> Vec3 {
-       return Vec3::fill(f32::NAN);
+        return Vec3::fill(f64::NAN);
     }
 
-    pub fn fill(value: f32) -> Vec3 {
+    pub fn fill(value: f64) -> Vec3 {
         Vec3 {
             x: value,
             y: value,
-            z: value
+            z: value,
         }
     }
 
-    pub fn length(&self) -> f32 {
-        let len_squared: f32 = self.x * self.x + self.y * self.y + self.z * self.z;
+    pub fn length(&self) -> f64 {
+        let len_squared: f64 = self.x * self.x + self.y * self.y + self.z * self.z;
         return len_squared.sqrt();
     }
 
@@ -162,9 +159,6 @@ impl Vec3 {
     }
 }
 
-pub fn dot(a: Vec3, b: Vec3) -> f32 {
-    return a.x * b.x
-        + a.y * b.y
-        + a.z * b.z;
+pub fn dot(a: Vec3, b: Vec3) -> f64 {
+    return a.x * b.x + a.y * b.y + a.z * b.z;
 }
-

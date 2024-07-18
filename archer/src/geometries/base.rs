@@ -1,3 +1,4 @@
+// TODO: PORT EVERYTHING TO NALGEBRA
 use crate::ray::Ray;
 use crate::vectors::Vec3;
 
@@ -12,4 +13,3 @@ impl Geometry for BaseGeometry {
         return (Vec3::new_empty(), Vec3::new_empty());
     }
 }
-
