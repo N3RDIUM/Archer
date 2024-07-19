@@ -1,6 +1,7 @@
 use crate::ray::Ray;
 use crate::vectors::PixelCoord;
 use nalgebra::{Point3, Vector3};
+use rand::prelude::*;
 // TODO: Use Rotation3 instead of doing hacky stuff
 
 #[derive(Debug)]
@@ -10,6 +11,7 @@ pub struct Camera {
     pub viewport_height: f32,
     pub position: Point3<f32>,
     pub rotation: Vector3<f32>,
+    pub randomness: f32,
 
     // These things are set by the `update` func!
     pixel_delta_u: Vector3<f32>,
@@ -25,6 +27,7 @@ impl Camera {
             viewport_height: 2.0,
             position: Point3::new(0.0, 0.0, 0.0),
             rotation: Vector3::new(0.0, 0.0, 0.0),
+            randomness: 0.001,
 
             pixel_delta_u: Vector3::new(0.0, 0.0, 0.0),
             pixel_delta_v: Vector3::new(0.0, 0.0, 0.0),
@@ -58,8 +61,11 @@ impl Camera {
         let pixel_center: Vector3<f32> = self.top_left_location
             + self.pixel_delta_u * pixel.x as f32
             + self.pixel_delta_v * pixel.y as f32;
-        let ray_direction =
-            pixel_center - Vector3::new(self.position.x, self.position.y, self.position.z);
+
+        let mut rng = rand::thread_rng();
+        let ray_direction = pixel_center
+            - Vector3::new(self.position.x, self.position.y, self.position.z)
+            + Vector3::new(rng.gen(), rng.gen(), rng.gen()) * self.randomness;
 
         return Ray {
             origin: self.position,
