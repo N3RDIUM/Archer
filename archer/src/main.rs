@@ -15,7 +15,7 @@ use vectors::{Color, PixelCoord};
 fn main() {
     const RESOLUTION: PixelCoord<u32> = PixelCoord::new(1920, 1080);
     const MAX_BOUNCES: u32 = 1;
-    const SAMPLES: u32 = 8;
+    const SAMPLES: u32 = 1;
 
     let mut image = RgbImage::new(RESOLUTION.x, RESOLUTION.y);
     let mut cam = Camera::new(RESOLUTION);
