@@ -1,35 +1,37 @@
 use crate::geometries::base::Geometry;
 use crate::ray::Ray;
-use crate::vectors::dot;
-use crate::vectors::Vec3;
+use crate::vectors::Normal;
+use nalgebra::{Point3, Vector3};
 
 pub struct Sphere {
-    pub radius: f64,
-    pub position: Vec3,
+    pub radius: f32,
+    pub position: Point3<f32>,
 }
 
 impl Geometry for Sphere {
-    fn intersect(&self, incoming: Ray) -> (Vec3, Vec3) {
+    fn intersect(&self, incoming: Ray) -> (nalgebra::Point3<f32>, Vector3<f32>) {
         // Origin
-        let oc: Vec3 = self.position - incoming.origin;
+        let oc: Vector3<f32> = self.position - incoming.origin;
 
         // Coefficients and discriminant
-        let a: f64 = dot(incoming.direction, incoming.direction);
-        let b: f64 = -2.0 * dot(incoming.direction, oc);
-        let c: f64 = dot(oc, oc) - self.radius * self.radius;
-        let discriminant: f64 = b * b - 4.0 * a * c;
+        let a: f32 = incoming.direction.dot(&incoming.direction);
+        let b: f32 = -2.0 * incoming.direction.dot(&oc);
+        let c: f32 = oc.dot(&oc) - self.radius * self.radius;
+        let discriminant: f32 = b * b - 4.0 * a * c;
 
-        let ret = Vec3::fill(f64::NAN);
         if discriminant >= 0.0 {
             let t1 = -b - discriminant.sqrt() / (2.0 * a); // Near
             let _t2 = -b + discriminant.sqrt() / (2.0 * a); // Far
 
             // TODO: Calculate the normal
-            let normal = Vec3::fill(f64::NAN);
+            let normal = Normal::new(f32::NAN, f32::NAN, f32::NAN);
 
             return (incoming.position_at(t1), normal);
         }
 
-        return (ret, Vec3::fill(f64::NAN));
+        return (
+            Point3::new(f32::NAN, f32::NAN, f32::NAN),
+            Vector3::new(f32::NAN, f32::NAN, f32::NAN),
+        );
     }
 }

@@ -1,15 +1,19 @@
 // TODO: PORT EVERYTHING TO NALGEBRA
 use crate::ray::Ray;
-use crate::vectors::Vec3;
+use crate::vectors::Normal;
+use nalgebra::Point3;
 
 pub trait Geometry {
-    fn intersect(&self, incoming: Ray) -> (Vec3, Vec3);
+    fn intersect(&self, incoming: Ray) -> (Point3<f32>, Normal<f32>); /* Hit point, Normal */
 }
 
 pub struct BaseGeometry {}
 impl Geometry for BaseGeometry {
-    fn intersect(&self, incoming: Ray) -> (Vec3, Vec3) {
+    fn intersect(&self, incoming: Ray) -> (Point3<f32>, Normal<f32>) {
         let _ = incoming;
-        return (Vec3::new_empty(), Vec3::new_empty());
+        return (
+            Point3::new(f32::NAN, f32::NAN, f32::NAN),
+            Normal::new(f32::NAN, f32::NAN, f32::NAN),
+        );
     }
 }
