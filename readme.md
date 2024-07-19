@@ -7,11 +7,9 @@ All the code in this repo is heavily commented so that it is easy to follow. Whe
 __Currently working on:__ Multiple bounces, lambertian material, using the `nalgebra` and `bvh` crates instead of re-inventing the wheel
 
 - [x] Basic Sphere [Devlog 1]
-- [ ] Multiple Reflections [Devlog 2]
+- [ ] Multiple Reflections + BVH [Devlog 2]
 - [ ] Refraction [Devlog 3]
-- [ ] Optimization [Devlog 4a]
-- [ ] BVH Implementation [Devlog 4b]
-- [ ] Restir Implementation [Devlog 4c]
+- [ ] More stuff coming soon!
 
 ## Latest Render
 ![Latest render](./archer/output.png)
