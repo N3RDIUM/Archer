@@ -32,14 +32,13 @@ impl Camera {
         };
     }
 
-    // TODO: BUGFIX: THERES SOMETHING WRONG WITH THE CAMERA CODE!
     pub fn update(&mut self) {
-        let aspect = self.resolution.x / self.resolution.y;
-        let viewport_width = self.viewport_height * aspect;
+        let aspect: f32 = self.resolution.x / self.resolution.y;
+        let viewport_width: f32 = self.viewport_height * aspect;
 
         // Calculate viewport stuff
         let viewport_u: Vector3<f32> = Vector3::new(viewport_width, 0.0, 0.0);
-        let viewport_v: Vector3<f32> = Vector3::new(-self.viewport_height, 0.0, 0.0);
+        let viewport_v: Vector3<f32> = Vector3::new(0.0, -self.viewport_height, 0.0);
 
         // Calculate pixel deltas
         self.pixel_delta_u = viewport_u / self.resolution.x;

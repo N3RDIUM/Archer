@@ -62,7 +62,7 @@ fn main() {
             let material = object.material.as_ref();
 
             let (hit_point, normal) = geometry.intersect(current_ray);
-            if f32::is_nan(hit_point.x * hit_point.y * hit_point.z) {
+            if !f32::is_nan(hit_point.x * hit_point.y * hit_point.z) {
                 let bounced = material.bounce(ray, hit_point, normal);
                 current_ray = bounced;
 
@@ -90,8 +90,8 @@ fn main() {
     let mut sth = vec![];
     pixels.collect_into_vec(&mut sth);
 
-    let elapsed = now.elapsed().as_secs_f64();
-    let fps: f64 = 1.0 / elapsed;
+    let elapsed = now.elapsed().as_secs_f32();
+    let fps: f32 = 1.0 / elapsed;
     println!("One frame took {elapsed} seconds. That's {fps} FPS!");
 
     println!("Saving image to `output.png`...");
