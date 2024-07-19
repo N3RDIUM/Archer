@@ -32,6 +32,7 @@ impl Camera {
         };
     }
 
+    // TODO: BUGFIX: THERES SOMETHING WRONG WITH THE CAMERA CODE!
     pub fn update(&mut self) {
         let aspect = self.resolution.x / self.resolution.y;
         let viewport_width = self.viewport_height * aspect;
@@ -45,16 +46,15 @@ impl Camera {
         self.pixel_delta_v = viewport_v / self.resolution.y;
 
         // Calculate the location of the upper left pixel
-        let focal_length: Vector3<f32> = Vector3::new(0.0, 0.0, self.focal_length);
-        let top_left: Vector3<f32> =
-            Vector3::new(self.position.x, self.position.y, self.position.z)
-                - focal_length
-                - viewport_u / 2.0
-                - viewport_v / 2.0;
+        let top_left: Vector3<f32> = Vector3::new(
+            self.position.x,
+            self.position.y,
+            self.position.z - self.focal_length,
+        ) - viewport_u / 2.0
+            - viewport_v / 2.0;
         self.top_left_location = top_left + (self.pixel_delta_u + self.pixel_delta_v) / 2.0;
     }
 
-    // YOU WERE HERE, PORTING EVERTRHING TO nalgebra AGAIN!
     pub fn get_ray(&self, pixel: PixelCoord<u32>) -> Ray {
         let pixel_center: Vector3<f32> = self.top_left_location
             + self.pixel_delta_u * pixel.x as f32

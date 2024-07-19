@@ -71,6 +71,7 @@ fn main() {
                     hit_point,
                     normal,
                     bounced,
+                    geometry: Box::new(geometry),
                     material: Box::new(material),
                 };
                 hit_info.push(hit);
