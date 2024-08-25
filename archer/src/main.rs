@@ -21,7 +21,7 @@ fn main() {
         color: Color::new(255.0, 0.0, 0.0),
     };
     let sphere1: Sphere = Sphere {
-        radius: 0.5,
+        radius: 0.4,
         position: Point3::new(-1.0, 0.0, -1.0),
     };
     let object1: SceneObject = SceneObject {
@@ -34,7 +34,7 @@ fn main() {
         color: Color::new(0.0, 255.0, 0.0),
     };
     let sphere2: Sphere = Sphere {
-        radius: 0.5,
+        radius: 0.3,
         position: Point3::new(1.0, 0.0, -1.0),
     };
     let object2: SceneObject = SceneObject {
@@ -48,8 +48,8 @@ fn main() {
         color: Color::new(0.0, 0.0, 255.0),
     };
     let sphere3: Sphere = Sphere {
-        radius: 0.5,
-        position: Point3::new(0.0, -1.0, -1.0),
+        radius: 0.2,
+        position: Point3::new(0.0, -0.5, -1.0),
     };
     let object3: SceneObject = SceneObject {
         geometry: Box::new(sphere3),
@@ -62,8 +62,8 @@ fn main() {
         color: Color::new(255.0, 255.0, 0.0),
     };
     let sphere4: Sphere = Sphere {
-        radius: 0.5,
-        position: Point3::new(0.0, 1.0, -1.0),
+        radius: 0.1,
+        position: Point3::new(0.0, 0.3, -1.0),
     };
     let object4: SceneObject = SceneObject {
         geometry: Box::new(sphere4),

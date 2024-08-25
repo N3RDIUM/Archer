@@ -124,4 +124,3 @@ impl Tracer<'_> {
         return color;
     }
 }
-
