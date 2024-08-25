@@ -16,4 +16,5 @@ __Currently working on:__ Multiple bounces, lambertian material, using the `nalg
 
 ## Thanks and Citations
 
-[_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html) for helping kick-start the project
+[_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html): for showing how to do stuff
+[_The Ray Tracing Road To Rust_](https://the-ray-tracing-road-to-rust.vercel.app/): for showing how to do stuff in rust
