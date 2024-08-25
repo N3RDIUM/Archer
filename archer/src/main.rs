@@ -6,9 +6,10 @@ use image::{Rgb, RgbImage};
 use archer::camera::Camera;
 use archer::geometries::sphere::Sphere;
 use archer::scene::{Scene, SceneObject};
-use archer::materials::solid::SolidColor;
 use archer::vectors::{Color, PixelCoord};
+use archer::materials::solid::SolidColor;
 use archer::tracer::{RenderParameters, Tracer};
+use archer::materials::perfect_mirror::PerfectMirror;
 
 fn main() {
     const RESOLUTION: PixelCoord<u32> = PixelCoord::new(1920, 1080);
@@ -17,11 +18,9 @@ fn main() {
     camera.update();
 
     // Add some spheres
-    let material1: SolidColor = SolidColor {
-        color: Color::new(255.0, 0.0, 0.0),
-    };
+    let material1: PerfectMirror = PerfectMirror {};
     let sphere1: Sphere = Sphere {
-        radius: 0.4,
+        radius: 1.0,
         position: Point3::new(-1.0, 0.0, -1.0),
     };
     let object1: SceneObject = SceneObject {
@@ -34,7 +33,7 @@ fn main() {
         color: Color::new(0.0, 255.0, 0.0),
     };
     let sphere2: Sphere = Sphere {
-        radius: 0.3,
+        radius: 1.0,
         position: Point3::new(1.0, 0.0, -1.0),
     };
     let object2: SceneObject = SceneObject {
@@ -43,40 +42,10 @@ fn main() {
         node_index: 0,
     };
 
-
-    let material3: SolidColor = SolidColor {
-        color: Color::new(0.0, 0.0, 255.0),
-    };
-    let sphere3: Sphere = Sphere {
-        radius: 0.2,
-        position: Point3::new(0.0, -0.5, -1.0),
-    };
-    let object3: SceneObject = SceneObject {
-        geometry: Box::new(sphere3),
-        material: Box::new(material3),
-        node_index: 0,
-    };
-
-
-    let material4: SolidColor = SolidColor {
-        color: Color::new(255.0, 255.0, 0.0),
-    };
-    let sphere4: Sphere = Sphere {
-        radius: 0.1,
-        position: Point3::new(0.0, 0.3, -1.0),
-    };
-    let object4: SceneObject = SceneObject {
-        geometry: Box::new(sphere4),
-        material: Box::new(material4),
-        node_index: 0,
-    };
-
     // Create the scene
     let mut scene: Scene = Scene { objects: vec![] };
     scene.add(object1);
     scene.add(object2);
-    scene.add(object3);
-    scene.add(object4);
     
     let bvh = scene.build_bvh();
 
@@ -88,7 +57,7 @@ fn main() {
     };
 
     let params = RenderParameters {
-        max_bounces: 1,
+        max_bounces: 4,
         samples: 32
     };
 

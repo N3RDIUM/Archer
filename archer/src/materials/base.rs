@@ -5,8 +5,7 @@ use crate::vectors::{Color, Normal};
 
 pub trait Material {
     fn bounce(&self, incoming: &Ray, hit_point: Point3<f32>, normal: Normal<f32>) -> Ray;
-    fn add_color(&self, incoming: &Ray, hit_point: Point3<f32>, normal: Normal<f32>) -> Color<f32>;
-    // TODO: Account for the previous color in add_color!
+    fn add_color(&self, incoming: &Ray, hit_point: Point3<f32>, normal: Normal<f32>, previous_color: &Color<f32>) -> Color<f32>;
 }
 
 pub struct BaseMaterial {}
@@ -24,8 +23,9 @@ impl Material for BaseMaterial {
         incoming: &Ray,
         hit_point: Point3<f32>,
         normal: Vector3<f32>,
+        color: &Color<f32>
     ) -> Color<f32> {
-        let _ = (incoming, hit_point, normal);
+        let _ = (incoming, hit_point, normal, color);
         return Color::new(0.0, 0.0, 0.0);
     }
 }

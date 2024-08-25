@@ -76,25 +76,21 @@ impl Tracer<'_> {
                 None                => {}
             }
 
-            if hit_info.len() == 0 {
-                let norm = ray.direction.normalize();
-                let a = 0.5 * (norm.y + 1.0);
-                color.x += 255.0 * (1.0 - a) + 0.5 * 255.0 * a;
-                color.y += 255.0 * (1.0 - a) + 0.7 * 255.0 * a;
-                color.z += 255.0 * (1.0 - a) + 1.0 * 255.0 * a;
-            }
-
-            for hit in hit_info.iter() {
-                let hit_info: &HitInfo = hit.to_owned();
-                let object: &SceneObject = hit_info.object.as_ref();
-                let mtl_color = object.material.add_color(&hit.incoming, hit.hit_point, hit.normal);
-
-                color.x += mtl_color.x;
-                color.y += mtl_color.y;
-                color.z += mtl_color.z;
-            }
-
             bounces += 1;
+        }
+
+        let ray = Tracer::get_current_ray(&initial_ray, &hit_info);
+        let norm = ray.direction.normalize();
+        let a = 0.5 * (norm.y + 1.0);
+        color.x = 255.0 * (1.0 - a) + 0.5 * 255.0 * a;
+        color.y = 255.0 * (1.0 - a) + 0.7 * 255.0 * a;
+        color.z = 255.0 * (1.0 - a) + 1.0 * 255.0 * a;
+
+        hit_info.reverse();
+        for hit in hit_info.iter() {
+            let hit_info: &HitInfo = hit.to_owned();
+            let object: &SceneObject = hit_info.object.as_ref();
+            color = object.material.add_color(&hit.incoming, hit.hit_point, hit.normal, &color);
         }
 
         return color;

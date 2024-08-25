@@ -2,7 +2,6 @@ use bvh::aabb::Aabb;
 use nalgebra::{Point3, Vector3};
 
 use crate::ray::Ray;
-use crate::vectors::Normal;
 use crate::geometries::base::Geometry;
 
 pub struct Sphere {
@@ -25,10 +24,11 @@ impl Geometry for Sphere {
             let t1 = -b - discriminant.sqrt() / (2.0 * a); // Near
             let _t2 = -b + discriminant.sqrt() / (2.0 * a); // Far
 
-            // TODO: Calculate the normal
-            let normal = Normal::new(f32::NAN, f32::NAN, f32::NAN);
+            let point = incoming.position_at(t1);
+            let mut normal = point - Point3::new(0.0, 0.0, -1.0);
+            normal = normal.normalize();
 
-            return (incoming.position_at(t1), normal);
+            return (point, normal);
         }
 
         return (
