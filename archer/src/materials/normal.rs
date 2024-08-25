@@ -20,10 +20,10 @@ impl Material for NormalMaterial {
         color: &Color<f32>
     ) -> Point3<f32> {
         let _ = (incoming, hit_point, color);
-        let mut normal_color = Color::new(0.0, 0.0, 0.0);
-        normal_color.x = 255.0 * 0.5 * (normal.x + 1.0);
-        normal_color.y = 255.0 * 0.5 * (normal.y + 1.0);
-        normal_color.z = 255.0 * 0.5 * (normal.z + 1.0);
-        return normal_color;
+        return Color::new(
+            0.5 * (normal.x + 1.0) * 255.0, 
+            0.5 * (normal.z + 1.0) * 255.0, 
+            0.5 * (normal.y + 1.0) * 255.0, 
+        );
     }
 }

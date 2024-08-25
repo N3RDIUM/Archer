@@ -4,11 +4,12 @@ use std::time::Instant;
 use image::{Rgb, RgbImage};
 
 use archer::camera::Camera;
+use archer::vectors::PixelCoord;
 use archer::geometries::sphere::Sphere;
 use archer::scene::{Scene, SceneObject};
-use archer::vectors::PixelCoord;
 use archer::materials::normal::NormalMaterial;
 use archer::tracer::{RenderParameters, Tracer};
+use archer::materials::perfect_mirror::PerfectMirror;
 
 fn main() {
     const RESOLUTION: PixelCoord<u32> = PixelCoord::new(1920, 1080);
@@ -17,20 +18,32 @@ fn main() {
     camera.update();
 
     // Add some spheres
-    let material = NormalMaterial {};
+    let material = PerfectMirror {};
     let sphere: Sphere = Sphere {
         radius: 1.0,
-        position: Point3::new(0.0, 0.0, -1.42),
+        position: Point3::new(1.0, 0.0, -2.0),
     };
-    let object: SceneObject = SceneObject {
+    let ball: SceneObject = SceneObject {
         geometry: Box::new(sphere),
         material: Box::new(material),
         node_index: 0,
     };
 
+    let the_ground = NormalMaterial {};
+    let gnd: Sphere = Sphere {
+        radius: 1.0,
+        position: Point3::new(-1.0, 0.0, -2.0),
+    };
+    let ground: SceneObject = SceneObject {
+        geometry: Box::new(gnd),
+        material: Box::new(the_ground),
+        node_index: 0,
+    };
+
     // Create the scene
     let mut scene: Scene = Scene { objects: vec![] };
-    scene.add(object);
+    scene.add(ball);
+    scene.add(ground);
     
     let bvh = scene.build_bvh();
 
