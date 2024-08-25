@@ -25,7 +25,7 @@ impl Geometry for Sphere {
             let _t2 = -b + discriminant.sqrt() / (2.0 * a); // Far
 
             let point = incoming.position_at(t1);
-            let mut normal = point - Point3::new(0.0, 0.0, -1.0);
+            let mut normal = point - self.position;
             normal = normal.normalize();
 
             return (point, normal);

@@ -8,6 +8,7 @@ use archer::geometries::sphere::Sphere;
 use archer::scene::{Scene, SceneObject};
 use archer::vectors::{Color, PixelCoord};
 use archer::materials::solid::SolidColor;
+use archer::materials::normal::NormalMaterial;
 use archer::tracer::{RenderParameters, Tracer};
 use archer::materials::perfect_mirror::PerfectMirror;
 
@@ -18,34 +19,20 @@ fn main() {
     camera.update();
 
     // Add some spheres
-    let material1: PerfectMirror = PerfectMirror {};
-    let sphere1: Sphere = Sphere {
+    let material = NormalMaterial {};
+    let sphere: Sphere = Sphere {
         radius: 1.0,
-        position: Point3::new(-1.0, 0.0, -1.0),
+        position: Point3::new(0.0, 0.0, -1.42),
     };
-    let object1: SceneObject = SceneObject {
-        geometry: Box::new(sphere1),
-        material: Box::new(material1),
-        node_index: 0,
-    };
-
-    let material2: SolidColor = SolidColor {
-        color: Color::new(0.0, 255.0, 0.0),
-    };
-    let sphere2: Sphere = Sphere {
-        radius: 1.0,
-        position: Point3::new(1.0, 0.0, -1.0),
-    };
-    let object2: SceneObject = SceneObject {
-        geometry: Box::new(sphere2),
-        material: Box::new(material2),
+    let object: SceneObject = SceneObject {
+        geometry: Box::new(sphere),
+        material: Box::new(material),
         node_index: 0,
     };
 
     // Create the scene
     let mut scene: Scene = Scene { objects: vec![] };
-    scene.add(object1);
-    scene.add(object2);
+    scene.add(object);
     
     let bvh = scene.build_bvh();
 
