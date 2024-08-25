@@ -73,8 +73,7 @@ fn main() {
         max_bounces: 4,
         samples: 32
     };
-
-    // TODO: Split screen space into boxes or scanlines and trace!!
+    
     let now = Instant::now();
     let pixels = image.par_enumerate_pixels_mut().map(|(x, y, pixel)| {
         let pixel_coord = PixelCoord::new(x as u32, y as u32);

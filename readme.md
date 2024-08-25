@@ -1,8 +1,9 @@
 # Archer
 
 ![Archer Logo](ArcherLogo.png)
-A rusty ray tracing engine built to run with a decent frame rate even on CPU, allowing for realtime raytracing applications without GPUs.
-All the code in this repo is heavily commented so that it is easy to follow. When complete, it will have a three.js-like usage format.
+A rusty ray tracing engine being built to run with a decent frame rate even on CPU, allowing for realtime raytracing applications without GPUs.
+Every line of code is written with extensibility, hackability and the project's future in mind. Although it is kinda dirty at the moment, it will
+get good eventually, possibly turning into the best ray tracer on the planet.
 
 __Currently working on:__ Multiple bounces, lambertian material, using the `nalgebra` and `bvh` crates instead of re-inventing the wheel
 
@@ -12,6 +13,7 @@ __Currently working on:__ Multiple bounces, lambertian material, using the `nalg
 - [ ] More stuff coming soon!
 
 ## Latest Render
+
 ![Latest render](./archer/output.png)
 
 ## Thanks and Citations
