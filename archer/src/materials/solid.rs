@@ -1,7 +1,8 @@
-use crate::materials::base::Material;
+use nalgebra::{Point3, Vector3};
+
 use crate::ray::Ray;
 use crate::vectors::{Color, Normal};
-use nalgebra::{Point3, Vector3};
+use crate::materials::base::Material;
 
 pub struct SolidColor {
     pub color: Color<f32>,

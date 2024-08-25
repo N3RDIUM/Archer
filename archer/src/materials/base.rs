@@ -1,6 +1,7 @@
+use nalgebra::{Point3, Vector3};
+
 use crate::ray::Ray;
 use crate::vectors::{Color, Normal};
-use nalgebra::{Point3, Vector3};
 
 pub trait Material {
     fn bounce(&self, incoming: &Ray, hit_point: Point3<f32>, normal: Normal<f32>) -> Ray;

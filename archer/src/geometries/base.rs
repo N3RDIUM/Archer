@@ -1,7 +1,8 @@
-use crate::ray::Ray;
-use crate::vectors::Normal;
 use bvh::aabb::Aabb;
 use nalgebra::{Point3, Vector3};
+
+use crate::ray::Ray;
+use crate::vectors::Normal;
 
 pub trait Geometry {
     fn intersect(&self, incoming: &Ray) -> (Point3<f32>, Normal<f32>);

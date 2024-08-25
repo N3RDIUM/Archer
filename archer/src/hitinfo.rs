@@ -1,7 +1,8 @@
+use nalgebra::Point3;
+
 use crate::ray::Ray;
 use crate::scene::SceneObject;
 use crate::vectors::Normal;
-use nalgebra::Point3;
 
 pub struct HitInfo<'a> {
     pub incoming: Ray,

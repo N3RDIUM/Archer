@@ -1,8 +1,7 @@
 use crate::ray::Ray;
+use rand::prelude::*;
 use crate::vectors::PixelCoord;
 use nalgebra::{Point3, Vector3};
-use rand::prelude::*;
-// TODO: Use Rotation3 instead of doing hacky stuff
 
 #[derive(Debug)]
 pub struct Camera {

@@ -1,11 +1,11 @@
-use crate::geometries::base::Geometry;
-use crate::materials::base::Material;
-use crate::ray::Ray;
+use std::rc::Rc;
+use bvh::bvh::Bvh;
 use bvh::aabb::{Aabb, Bounded};
 use bvh::bounding_hierarchy::{BHShape, BoundingHierarchy};
-use bvh::bvh::Bvh;
-use std::rc::Rc;
 
+use crate::ray::Ray;
+use crate::materials::base::Material;
+use crate::geometries::base::Geometry;
 pub struct SceneObject {
     pub geometry: Box<dyn Geometry + Send + Sync>,
     pub material: Box<dyn Material + Send + Sync>,
