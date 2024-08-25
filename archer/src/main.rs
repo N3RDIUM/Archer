@@ -16,24 +16,68 @@ fn main() {
     let mut camera = Camera::new(RESOLUTION);
     camera.update();
 
-    // Add a red sphere
-    let sphere: Sphere = Sphere {
-        radius: 0.5,
-        position: Point3::new(0.0, 0.0, -1.0),
-    };
-    let red_mtl: SolidColor = SolidColor {
+    // Add some spheres
+    let material1: SolidColor = SolidColor {
         color: Color::new(255.0, 0.0, 0.0),
     };
+    let sphere1: Sphere = Sphere {
+        radius: 0.5,
+        position: Point3::new(-1.0, 0.0, -1.0),
+    };
+    let object1: SceneObject = SceneObject {
+        geometry: Box::new(sphere1),
+        material: Box::new(material1),
+        node_index: 0,
+    };
 
-    let object: SceneObject = SceneObject {
-        geometry: Box::new(sphere),
-        material: Box::new(red_mtl),
+    let material2: SolidColor = SolidColor {
+        color: Color::new(0.0, 255.0, 0.0),
+    };
+    let sphere2: Sphere = Sphere {
+        radius: 0.5,
+        position: Point3::new(1.0, 0.0, -1.0),
+    };
+    let object2: SceneObject = SceneObject {
+        geometry: Box::new(sphere2),
+        material: Box::new(material2),
+        node_index: 0,
+    };
+
+
+    let material3: SolidColor = SolidColor {
+        color: Color::new(0.0, 0.0, 255.0),
+    };
+    let sphere3: Sphere = Sphere {
+        radius: 0.5,
+        position: Point3::new(0.0, -1.0, -1.0),
+    };
+    let object3: SceneObject = SceneObject {
+        geometry: Box::new(sphere3),
+        material: Box::new(material3),
+        node_index: 0,
+    };
+
+
+    let material4: SolidColor = SolidColor {
+        color: Color::new(255.0, 255.0, 0.0),
+    };
+    let sphere4: Sphere = Sphere {
+        radius: 0.5,
+        position: Point3::new(0.0, 1.0, -1.0),
+    };
+    let object4: SceneObject = SceneObject {
+        geometry: Box::new(sphere4),
+        material: Box::new(material4),
         node_index: 0,
     };
 
     // Create the scene
     let mut scene: Scene = Scene { objects: vec![] };
-    scene.add(object);
+    scene.add(object1);
+    scene.add(object2);
+    scene.add(object3);
+    scene.add(object4);
+    
     let bvh = scene.build_bvh();
 
     // Finally, make the tracer and let the magic happen!
