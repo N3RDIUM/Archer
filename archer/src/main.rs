@@ -6,11 +6,9 @@ use image::{Rgb, RgbImage};
 use archer::camera::Camera;
 use archer::geometries::sphere::Sphere;
 use archer::scene::{Scene, SceneObject};
-use archer::vectors::{Color, PixelCoord};
-use archer::materials::solid::SolidColor;
+use archer::vectors::PixelCoord;
 use archer::materials::normal::NormalMaterial;
 use archer::tracer::{RenderParameters, Tracer};
-use archer::materials::perfect_mirror::PerfectMirror;
 
 fn main() {
     const RESOLUTION: PixelCoord<u32> = PixelCoord::new(1920, 1080);
