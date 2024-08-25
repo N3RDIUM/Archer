@@ -5,7 +5,7 @@ A rusty ray tracing engine being built to run with a decent frame rate even on C
 Every line of code is written with extensibility, hackability and the project's future in mind. Although it is kinda dirty at the moment, it will
 get good eventually, possibly turning into the best ray tracer on the planet.
 
-__Currently working on:__ Multiple bounces, lambertian material, using the `nalgebra` and `bvh` crates instead of re-inventing the wheel
+__Currently working on:__ Ray bounces, reflection, tiling/chunking for efficient parallelism.
 
 - [x] Basic Sphere [Devlog 1]
 - [ ] Multiple Reflections + BVH [Devlog 2]
