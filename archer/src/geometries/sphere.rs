@@ -10,7 +10,7 @@ pub struct Sphere {
 }
 
 impl Geometry for Sphere {
-    fn intersect(&self, incoming: &Ray) -> (nalgebra::Point3<f32>, Vector3<f32>) {
+    fn intersect(&self, incoming: &Ray) -> Option<(Point3<f32>, Vector3<f32>)> {
         // Origin
         let oc: Vector3<f32> = self.position - incoming.origin;
 
@@ -28,13 +28,10 @@ impl Geometry for Sphere {
             let mut normal = point - self.position;
             normal = normal.normalize();
 
-            return (point, normal);
+            return Some((point, normal));
         }
 
-        return (
-            Point3::new(f32::NAN, f32::NAN, f32::NAN),
-            Vector3::new(f32::NAN, f32::NAN, f32::NAN),
-        );
+        return None;
     }
 
     fn aabb(&self) -> Aabb<f32, 3> {

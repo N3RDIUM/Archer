@@ -12,7 +12,7 @@ use archer::tracer::{RenderParameters, Tracer};
 use archer::materials::perfect_mirror::PerfectMirror;
 
 fn main() {
-    const RESOLUTION: PixelCoord<u32> = PixelCoord::new(1280, 720);
+    const RESOLUTION: PixelCoord<u32> = PixelCoord::new(640, 480);
     let mut image: image::ImageBuffer<Rgb<u8>, Vec<u8>> = RgbImage::new(RESOLUTION.x, RESOLUTION.y);
     let mut camera = Camera::new(RESOLUTION);
     camera.update();

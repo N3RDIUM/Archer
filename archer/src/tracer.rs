@@ -1,5 +1,6 @@
 use std::rc::Rc;
 use bvh::bvh::Bvh;
+use nalgebra::{Point3, Vector3};
 
 use crate::ray::Ray;
 use crate::camera::Camera;
@@ -41,7 +42,22 @@ impl Tracer<'_> {
         let geometry: &Box<dyn Geometry + Send + Sync> = &nearest.geometry;
         let material: &Box<dyn Material + Send + Sync> = &nearest.material;
 
-        let (hit_point, normal) = geometry.intersect(&current_ray);
+        let intersection = geometry.intersect(&current_ray);
+        let mut hit_point = Point3::new(0.0, 0.0, 0.0); 
+        let mut normal = Vector3::new(0.0, 0.0, 0.0);
+        match intersection {
+            Some((hit, norm)) => {
+                hit_point.x = hit.x;
+                hit_point.y = hit.y;
+                hit_point.z = hit.z;
+
+                normal.x = norm.x;
+                normal.y = norm.y;
+                normal.z = norm.z;
+            },
+            None => return None
+        }
+
         if !f32::is_nan(hit_point.x) {
             let previous = current_ray.clone();
             let new = material.bounce(&current_ray, hit_point, normal);
@@ -79,6 +95,8 @@ impl Tracer<'_> {
             bounces += 1;
         }
 
+        hit_info.reverse();
+
         let ray = Tracer::get_current_ray(&initial_ray, &hit_info);
         let norm = ray.direction.normalize();
         let a = 0.5 * (norm.y + 1.0);
@@ -86,7 +104,6 @@ impl Tracer<'_> {
         color.y = 255.0 * (1.0 - a) + 0.7 * 255.0 * a;
         color.z = 255.0 * (1.0 - a) + 1.0 * 255.0 * a;
 
-        hit_info.reverse();
         for hit in hit_info.iter() {
             let hit_info: &HitInfo = hit.to_owned();
             let object: &SceneObject = hit_info.object.as_ref();
@@ -102,7 +119,7 @@ impl Tracer<'_> {
 
         loop {
             if samples >= parameters.samples {
-                break Default::default();
+                break;
             }
 
             let sample = self.sample(pixel, parameters.max_bounces);

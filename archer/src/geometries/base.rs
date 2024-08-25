@@ -2,21 +2,17 @@ use bvh::aabb::Aabb;
 use nalgebra::{Point3, Vector3};
 
 use crate::ray::Ray;
-use crate::vectors::Normal;
 
 pub trait Geometry {
-    fn intersect(&self, incoming: &Ray) -> (Point3<f32>, Normal<f32>);
+    fn intersect(&self, incoming: &Ray) -> Option<(nalgebra::Point3<f32>, Vector3<f32>)>;
     fn aabb(&self) -> Aabb<f32, 3>;
 }
 
 pub struct BaseGeometry {}
 impl Geometry for BaseGeometry {
-    fn intersect(&self, incoming: &Ray) -> (Point3<f32>, Normal<f32>) {
+    fn intersect(&self, incoming: &Ray) -> Option<(nalgebra::Point3<f32>, Vector3<f32>)> {
         let _ = incoming;
-        return (
-            Point3::new(f32::NAN, f32::NAN, f32::NAN),
-            Normal::new(f32::NAN, f32::NAN, f32::NAN),
-        );
+        return None;
     }
 
     fn aabb(&self) -> Aabb<f32, 3> {
