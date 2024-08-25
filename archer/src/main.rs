@@ -12,7 +12,7 @@ use archer::tracer::{RenderParameters, Tracer};
 use archer::materials::perfect_mirror::PerfectMirror;
 
 fn main() {
-    const RESOLUTION: PixelCoord<u32> = PixelCoord::new(640, 480);
+    const RESOLUTION: PixelCoord<u32> = PixelCoord::new(1280, 720);
     let mut image: image::ImageBuffer<Rgb<u8>, Vec<u8>> = RgbImage::new(RESOLUTION.x, RESOLUTION.y);
     let mut camera = Camera::new(RESOLUTION);
     camera.update();
@@ -29,21 +29,21 @@ fn main() {
         node_index: 0,
     };
 
-    let the_ground = NormalMaterial {};
-    let gnd: Sphere = Sphere {
+    let material1 = NormalMaterial {};
+    let sphere1: Sphere = Sphere {
         radius: 1.0,
         position: Point3::new(-1.0, 0.0, -4.0),
     };
-    let ground: SceneObject = SceneObject {
-        geometry: Box::new(gnd),
-        material: Box::new(the_ground),
+    let otherball: SceneObject = SceneObject {
+        geometry: Box::new(sphere1),
+        material: Box::new(material1),
         node_index: 0,
     };
 
     // Create the scene
     let mut scene: Scene = Scene { objects: vec![] };
     scene.add(ball);
-    scene.add(ground);
+    scene.add(otherball);
     
     let bvh = scene.build_bvh();
 

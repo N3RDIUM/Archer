@@ -1,6 +1,7 @@
+use core::f32;
 use std::rc::Rc;
 use bvh::bvh::Bvh;
-use nalgebra::{Point3, Vector3};
+use nalgebra::{Point3, Vector3, distance};
 
 use crate::ray::Ray;
 use crate::camera::Camera;
@@ -38,40 +39,54 @@ impl Tracer<'_> {
             return None;
         }
 
-        let nearest: &SceneObject = intersections[0].as_ref();
-        let geometry: &Box<dyn Geometry + Send + Sync> = &nearest.geometry;
-        let material: &Box<dyn Material + Send + Sync> = &nearest.material;
+        let mut checked = 0;
+        let mut closest = f32::INFINITY;
+        let mut ret: Option<HitInfo> = None;
 
-        let intersection = geometry.intersect(&current_ray);
-        let mut hit_point = Point3::new(0.0, 0.0, 0.0); 
-        let mut normal = Vector3::new(0.0, 0.0, 0.0);
-        match intersection {
-            Some((hit, norm)) => {
-                hit_point.x = hit.x;
-                hit_point.y = hit.y;
-                hit_point.z = hit.z;
+        loop {
+            if checked > intersections.len() - 1 { break }
 
-                normal.x = norm.x;
-                normal.y = norm.y;
-                normal.z = norm.z;
-            },
-            None => return None
+            let nearest: &SceneObject = intersections[checked].as_ref();
+            let geometry: &Box<dyn Geometry + Send + Sync> = &nearest.geometry;
+            let material: &Box<dyn Material + Send + Sync> = &nearest.material;
+
+            let intersection = geometry.intersect(&current_ray);
+            let mut hit_point = Point3::new(0.0, 0.0, 0.0); 
+            let mut normal = Vector3::new(0.0, 0.0, 0.0);
+            match intersection {
+                Some((hit, norm)) => {
+                    hit_point.x = hit.x;
+                    hit_point.y = hit.y;
+                    hit_point.z = hit.z;
+
+                    normal.x = norm.x;
+                    normal.y = norm.y;
+                    normal.z = norm.z;
+                },
+                None => { checked += 1; continue; }
+            }
+
+            let dist = distance(&self.camera.position, &hit_point);
+            if dist > closest { checked += 1; continue; }
+            closest = dist;
+
+            if !f32::is_nan(hit_point.x) {
+                let previous = current_ray.clone();
+                let new = material.bounce(&current_ray, hit_point, normal);
+
+                ret = Some(HitInfo {
+                    incoming: *previous,
+                    hit_point,
+                    normal,
+                    bounced: new,
+                    object: Box::new(nearest),
+                });
+            } else {}
+            
+            checked += 1;
         }
 
-        if !f32::is_nan(hit_point.x) {
-            let previous = current_ray.clone();
-            let new = material.bounce(&current_ray, hit_point, normal);
-
-            return Some(HitInfo {
-                incoming: *previous,
-                hit_point,
-                normal,
-                bounced: new,
-                object: Box::new(nearest),
-            });
-        } else {
-            return None;
-        }
+        return ret;
     }
 
     fn sample(&self, pixel: &PixelCoord<u32>, max_bounces: u32) -> Color<f32> {
