@@ -4,9 +4,10 @@ use std::time::Instant;
 use image::{Rgb, RgbImage};
 
 use archer::camera::Camera;
-use archer::vectors::PixelCoord;
 use archer::geometries::sphere::Sphere;
 use archer::scene::{Scene, SceneObject};
+use archer::vectors::{PixelCoord, Color};
+use archer::materials::solid:: SolidColor;
 use archer::materials::normal::NormalMaterial;
 use archer::tracer::{RenderParameters, Tracer};
 use archer::materials::perfect_mirror::PerfectMirror;
@@ -31,8 +32,8 @@ fn main() {
 
     let material1 = NormalMaterial {};
     let sphere1: Sphere = Sphere {
-        radius: 1.0,
-        position: Point3::new(-1.0, 0.0, -4.0),
+        radius: 0.42,
+        position: Point3::new(0.8, 0.0, -1.0),
     };
     let otherball: SceneObject = SceneObject {
         geometry: Box::new(sphere1),
@@ -40,10 +41,24 @@ fn main() {
         node_index: 0,
     };
 
+    let ground_mtl = SolidColor {
+        color: Color::new(128.0, 128.0, 128.0)
+    };
+    let ground_geom = Sphere {
+        radius: 1000.0,
+        position: Point3::new(0.0, -1002.0, 0.0),
+    };
+    let ground = SceneObject {
+        geometry: Box::new(ground_geom),
+        material: Box::new(ground_mtl),
+        node_index: 0,
+    };
+
     // Create the scene
     let mut scene: Scene = Scene { objects: vec![] };
     scene.add(ball);
     scene.add(otherball);
+    scene.add(ground);
     
     let bvh = scene.build_bvh();
 
