@@ -3,5 +3,6 @@ pub mod geometries;
 pub mod hitinfo;
 pub mod materials;
 pub mod ray;
-pub mod scene_object;
+pub mod scene;
+pub mod tracer;
 pub mod vectors;

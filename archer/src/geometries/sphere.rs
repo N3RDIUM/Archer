@@ -1,6 +1,7 @@
 use crate::geometries::base::Geometry;
 use crate::ray::Ray;
 use crate::vectors::Normal;
+use bvh::aabb::Aabb;
 use nalgebra::{Point3, Vector3};
 
 pub struct Sphere {
@@ -9,7 +10,7 @@ pub struct Sphere {
 }
 
 impl Geometry for Sphere {
-    fn intersect(&self, incoming: Ray) -> (nalgebra::Point3<f32>, Vector3<f32>) {
+    fn intersect(&self, incoming: &Ray) -> (nalgebra::Point3<f32>, Vector3<f32>) {
         // Origin
         let oc: Vector3<f32> = self.position - incoming.origin;
 
@@ -33,5 +34,12 @@ impl Geometry for Sphere {
             Point3::new(f32::NAN, f32::NAN, f32::NAN),
             Vector3::new(f32::NAN, f32::NAN, f32::NAN),
         );
+    }
+
+    fn aabb(&self) -> Aabb<f32, 3> {
+        let half_size = Vector3::new(self.radius, self.radius, self.radius);
+        let min = self.position - half_size;
+        let max = self.position + half_size;
+        Aabb::with_bounds(min, max)
     }
 }

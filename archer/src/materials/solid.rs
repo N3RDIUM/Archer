@@ -8,14 +8,14 @@ pub struct SolidColor {
 }
 
 impl Material for SolidColor {
-    fn bounce(&self, incoming: Ray, hit_point: Point3<f32>, normal: Normal<f32>) -> Ray {
+    fn bounce(&self, incoming: &Ray, hit_point: Point3<f32>, normal: Normal<f32>) -> Ray {
         let _ = (incoming, hit_point, normal);
         return Ray::new_empty();
     }
 
     fn add_color(
         &self,
-        incoming: Ray,
+        incoming: &Ray,
         hit_point: Point3<f32>,
         normal: Vector3<f32>,
     ) -> Point3<f32> {

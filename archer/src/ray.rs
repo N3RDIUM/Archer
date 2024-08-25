@@ -1,3 +1,4 @@
+use bvh::ray::Ray as BvhRay;
 use nalgebra::{Point3, Vector3};
 
 // Ray struct
@@ -17,5 +18,9 @@ impl Ray {
 
     pub fn position_at(self, t: f32) -> Point3<f32> {
         return self.origin + t * self.direction;
+    }
+
+    pub fn to_bvh_ray(self) -> BvhRay<f32, 3> {
+        return BvhRay::new(self.origin, self.direction);
     }
 }
