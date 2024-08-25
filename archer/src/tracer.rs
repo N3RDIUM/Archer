@@ -42,7 +42,7 @@ impl Tracer<'_> {
         let material: &Box<dyn Material + Send + Sync> = &nearest.material;
 
         let (hit_point, normal) = geometry.intersect(&current_ray);
-        if !f32::is_nan(hit_point.x * hit_point.y * hit_point.z) {
+        if !f32::is_nan(hit_point.x) {
             let previous = current_ray.clone();
             let new = material.bounce(&current_ray, hit_point, normal);
 
