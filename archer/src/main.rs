@@ -7,7 +7,7 @@ use archer::camera::Camera;
 use archer::geometries::sphere::Sphere;
 use archer::scene::{Scene, SceneObject};
 use archer::vectors::{PixelCoord, Color};
-use archer::materials::solid:: SolidColor;
+use archer::materials::diffuse::Diffuse;
 use archer::materials::normal::NormalMaterial;
 use archer::tracer::{RenderParameters, Tracer};
 use archer::materials::perfect_mirror::PerfectMirror;
@@ -41,12 +41,14 @@ fn main() {
         node_index: 0,
     };
 
-    let ground_mtl = SolidColor {
-        color: Color::new(128.0, 128.0, 128.0)
+    let ground_mtl = Diffuse {
+        color: Color::new(200.0, 200.0, 200.0),
+        roughness: 0.24,
+        albedo: 0.74
     };
     let ground_geom = Sphere {
         radius: 1000.0,
-        position: Point3::new(0.0, -1002.0, 0.0),
+        position: Point3::new(0.0, -1001.0, 0.0),
     };
     let ground = SceneObject {
         geometry: Box::new(ground_geom),
@@ -71,7 +73,7 @@ fn main() {
 
     let params = RenderParameters {
         max_bounces: 16,
-        samples: 16
+        samples: 128
     };
     
     let now = Instant::now();
