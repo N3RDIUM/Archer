@@ -12,25 +12,16 @@ pub struct Sphere {
 impl Geometry for Sphere {
     fn intersect(&self, incoming: &Ray) -> Option<(Point3<f32>, Vector3<f32>)> {
         // Origin
-        let oc: Vector3<f32> = self.position - incoming.origin;
+        let oc: Vector3<f32> = incoming.origin - self.position;
 
         // Coefficients and discriminant
         let a: f32 = incoming.direction.dot(&incoming.direction);
-        let b: f32 = -2.0 * incoming.direction.dot(&oc);
+        let b: f32 = 2.0 * incoming.direction.dot(&oc);
         let c: f32 = oc.dot(&oc) - self.radius * self.radius;
         let discriminant: f32 = b * b - 4.0 * a * c;
 
         if discriminant >= 0.0 {
-            let t1 = -b - discriminant.sqrt() / (2.0 * a);
-            let t2 = -b + discriminant.sqrt() / (2.0 * a);
-
-            let mut t = 0.0;
-            if t1 < t2 {
-                t = t1;
-            } else {
-                t = t2;
-            }
-
+            let t = (-b - f32::sqrt(discriminant)) / (2.0 * a);
             let point = incoming.position_at(t);
             let normal = (point - self.position).normalize();
 

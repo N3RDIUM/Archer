@@ -6,17 +6,11 @@ use crate::materials::base::Material;
 
 pub struct PerfectMirror {}
 
-impl PerfectMirror {
-    pub fn reflect(v: Vector3<f32>, n: Vector3<f32>) -> Vector3<f32> {
-        v - 2.0 * v.dot(&n) * n
-    }
-}
-
 impl Material for PerfectMirror {
     fn bounce(&self, incoming: &Ray, hit_point: Point3<f32>, normal: Normal<f32>) -> Ray {
         let mut bounced = Ray::new_empty();
         bounced.origin = hit_point;
-        bounced.direction = PerfectMirror::reflect(incoming.direction.normalize(), normal.normalize());
+        bounced.direction = incoming.direction - 2.0 * incoming.direction.dot(&normal) * normal;
 
         return bounced;
     }
