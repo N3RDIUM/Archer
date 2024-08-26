@@ -10,7 +10,7 @@ use archer::vectors::{PixelCoord, Color};
 use archer::materials::solid:: SolidColor;
 use archer::materials::normal::NormalMaterial;
 use archer::tracer::{RenderParameters, Tracer};
-// use archer::materials::perfect_mirror::PerfectMirror;
+use archer::materials::perfect_mirror::PerfectMirror;
 
 fn main() {
     const RESOLUTION: PixelCoord<u32> = PixelCoord::new(640, 480);
@@ -19,21 +19,21 @@ fn main() {
     camera.update();
 
     // Add some spheres
-    // let material = PerfectMirror {};
-    // let sphere: Sphere = Sphere {
-    //     radius: 1.0,
-    //     position: Point3::new(1.0, 0.0, -4.0),
-    // };
-    // let ball: SceneObject = SceneObject {
-    //     geometry: Box::new(sphere),
-    //     material: Box::new(material),
-    //     node_index: 0,
-    // };
+    let material = PerfectMirror {};
+    let sphere: Sphere = Sphere {
+        radius: 1.0,
+        position: Point3::new(1.0, 0.0, -4.0),
+    };
+    let ball: SceneObject = SceneObject {
+        geometry: Box::new(sphere),
+        material: Box::new(material),
+        node_index: 0,
+    };
 
     let material1 = NormalMaterial {};
     let sphere1: Sphere = Sphere {
         radius: 1.0,
-        position: Point3::new(0.0, 0.0, -4.0),
+        position: Point3::new(-1.0, 0.0, -4.0),
     };
     let otherball: SceneObject = SceneObject {
         geometry: Box::new(sphere1),
@@ -56,7 +56,7 @@ fn main() {
 
     // Create the scene
     let mut scene: Scene = Scene { objects: vec![] };
-    // scene.add(ball);
+    scene.add(ball);
     scene.add(otherball);
     scene.add(ground);
     

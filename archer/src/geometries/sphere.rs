@@ -22,6 +22,9 @@ impl Geometry for Sphere {
 
         if discriminant >= 0.0 {
             let t = (-b - f64::sqrt(discriminant)) / (2.0 * a);
+
+            if t < 0.00000000000000001 { return None }
+
             let point = incoming.position_at(t);
             let normal = (point - self.position).normalize();
 

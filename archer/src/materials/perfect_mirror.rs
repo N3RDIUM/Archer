@@ -13,6 +13,7 @@ impl Material for PerfectMirror {
         let v = incoming.direction.normalize();
         let n = normal.normalize();
 
+        // println!("{hit_point:?}");
         bounced.origin = hit_point;
         bounced.direction = v - 2.0 * n.dot(&v) * n;
 
