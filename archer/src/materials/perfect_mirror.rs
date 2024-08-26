@@ -16,7 +16,7 @@ impl Material for PerfectMirror {
     fn bounce(&self, incoming: &Ray, hit_point: Point3<f32>, normal: Normal<f32>) -> Ray {
         let mut bounced = Ray::new_empty();
         bounced.origin = hit_point;
-        bounced.direction = PerfectMirror::reflect(incoming.direction, normal);
+        bounced.direction = PerfectMirror::reflect(incoming.direction.normalize(), normal.normalize());
 
         return bounced;
     }

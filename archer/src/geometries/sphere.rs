@@ -21,12 +21,18 @@ impl Geometry for Sphere {
         let discriminant: f32 = b * b - 4.0 * a * c;
 
         if discriminant >= 0.0 {
-            let t1 = -b - discriminant.sqrt() / (2.0 * a); // Near
-            let _t2 = -b + discriminant.sqrt() / (2.0 * a); // Far
+            let t1 = -b - discriminant.sqrt() / (2.0 * a);
+            let t2 = -b + discriminant.sqrt() / (2.0 * a);
 
-            let point = incoming.position_at(t1);
-            let mut normal = point - self.position;
-            normal = normal.normalize();
+            let mut t = 0.0;
+            if t1 < t2 {
+                t = t1;
+            } else {
+                t = t2;
+            }
+
+            let point = incoming.position_at(t);
+            let normal = (point - self.position).normalize();
 
             return Some((point, normal));
         }

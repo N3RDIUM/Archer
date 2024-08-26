@@ -32,8 +32,8 @@ fn main() {
 
     let material1 = NormalMaterial {};
     let sphere1: Sphere = Sphere {
-        radius: 0.42,
-        position: Point3::new(0.8, 0.0, -1.0),
+        radius: 1.0,
+        position: Point3::new(-1.0, 0.0, -4.0),
     };
     let otherball: SceneObject = SceneObject {
         geometry: Box::new(sphere1),
@@ -70,8 +70,8 @@ fn main() {
     };
 
     let params = RenderParameters {
-        max_bounces: 4,
-        samples: 32
+        max_bounces: 16,
+        samples: 4
     };
     
     let now = Instant::now();
