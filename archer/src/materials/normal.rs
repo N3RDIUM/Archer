@@ -22,8 +22,8 @@ impl Material for NormalMaterial {
         let _ = (incoming, hit_point, color);
         return Color::new(
             0.5 * (normal.x + 1.0) * 255.0, 
-            0.5 * (normal.z + 1.0) * 255.0, 
             0.5 * (normal.y + 1.0) * 255.0, 
+            0.5 * (normal.z + 1.0) * 255.0, 
         );
     }
 }
