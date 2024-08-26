@@ -22,7 +22,7 @@ impl Camera {
     pub fn new(resolution: PixelCoord<u32>) -> Camera {
         return Camera {
             resolution: PixelCoord::new(resolution[0] as f64, resolution[1] as f64),
-            focal_length: 1.0,
+            focal_length: 2.0,
             viewport_height: 2.0,
             position: Point3::new(0.0, 0.0, 0.0),
             rotation: Vector3::new(0.0, 0.0, 0.0),

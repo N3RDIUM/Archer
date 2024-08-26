@@ -14,7 +14,7 @@ impl Material for PerfectMirror {
         let n = normal.normalize();
 
         bounced.origin = hit_point;
-        bounced.direction = v - 2.0 * v.dot(&n) * n;
+        bounced.direction = v - 2.0 * n.dot(&v) * n;
 
         return bounced;
     }
