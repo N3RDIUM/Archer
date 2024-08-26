@@ -1,4 +1,4 @@
-use core::f32;
+use core::f64;
 use std::rc::Rc;
 use bvh::bvh::Bvh;
 use nalgebra::{Point3, Vector3, distance};
@@ -19,7 +19,7 @@ pub struct RenderParameters {
 pub struct Tracer<'a> {
     pub scene: &'a Scene,
     pub camera: &'a Camera,
-    pub bvh: &'a Bvh<f32, 3>
+    pub bvh: &'a Bvh<f64, 3>
 }
 
 impl Tracer<'_> {
@@ -40,7 +40,7 @@ impl Tracer<'_> {
         }
 
         let mut checked = 0;
-        let mut closest = f32::INFINITY;
+        let mut closest = f64::INFINITY;
         let mut ret: Option<HitInfo> = None;
 
         loop {
@@ -70,7 +70,7 @@ impl Tracer<'_> {
             if dist > closest { checked += 1; continue; }
             closest = dist;
 
-            if !f32::is_nan(hit_point.x) {
+            if !f64::is_nan(hit_point.x) {
                 let previous = current_ray.clone();
                 let new = material.bounce(&current_ray, hit_point, normal);
 
@@ -89,8 +89,8 @@ impl Tracer<'_> {
         return ret;
     }
 
-    fn sample(&self, pixel: &PixelCoord<u32>, max_bounces: u32) -> Color<f32> {
-        let mut color: Color<f32> = Color::new(0.0, 0.0, 0.0);
+    fn sample(&self, pixel: &PixelCoord<u32>, max_bounces: u32) -> Color<f64> {
+        let mut color: Color<f64> = Color::new(0.0, 0.0, 0.0);
         let mut hit_info: Vec<HitInfo> = vec![];
         let initial_ray: Ray = self.camera.get_ray(*pixel);
         let mut bounces: u32 = 0;
@@ -128,8 +128,8 @@ impl Tracer<'_> {
         return color;
     }
 
-    pub fn get_pixel(&self, pixel: &PixelCoord<u32>, parameters: &RenderParameters) -> Color<f32> {
-        let mut color: Color<f32> = Color::new(0.0, 0.0, 0.0);
+    pub fn get_pixel(&self, pixel: &PixelCoord<u32>, parameters: &RenderParameters) -> Color<f64> {
+        let mut color: Color<f64> = Color::new(0.0, 0.0, 0.0);
         let mut samples: u32 = 0;
 
         loop {
@@ -145,9 +145,9 @@ impl Tracer<'_> {
             samples += 1;
         }
 
-        color.x /= parameters.samples as f32;
-        color.y /= parameters.samples as f32;
-        color.z /= parameters.samples as f32;
+        color.x /= parameters.samples as f64;
+        color.y /= parameters.samples as f64;
+        color.z /= parameters.samples as f64;
 
         return color;
     }

@@ -89,8 +89,8 @@ fn main() {
     let mut sth: Vec<()> = vec![];
     pixels.collect_into_vec(&mut sth);
 
-    let elapsed: f32 = now.elapsed().as_secs_f32();
-    let fps: f32 = 1.0 / elapsed;
+    let elapsed: f64 = now.elapsed().as_secs_f64();
+    let fps: f64 = 1.0 / elapsed;
     println!("One frame took {elapsed} seconds. That's {fps} FPS!");
 
     println!("Saving image to `output.png`...");

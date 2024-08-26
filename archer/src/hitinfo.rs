@@ -6,8 +6,8 @@ use crate::vectors::Normal;
 
 pub struct HitInfo<'a> {
     pub incoming: Ray,
-    pub hit_point: Point3<f32>,
-    pub normal: Normal<f32>,
+    pub hit_point: Point3<f64>,
+    pub normal: Normal<f64>,
     pub bounced: Ray,
     pub object: Box<&'a SceneObject>,
 }

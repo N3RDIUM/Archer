@@ -5,23 +5,23 @@ use nalgebra::{Point3, Vector3};
 
 #[derive(Debug)]
 pub struct Camera {
-    pub resolution: PixelCoord<f32>,
-    pub focal_length: f32,
-    pub viewport_height: f32,
-    pub position: Point3<f32>,
-    pub rotation: Vector3<f32>,
-    pub randomness: f32,
+    pub resolution: PixelCoord<f64>,
+    pub focal_length: f64,
+    pub viewport_height: f64,
+    pub position: Point3<f64>,
+    pub rotation: Vector3<f64>,
+    pub randomness: f64,
 
     // These things are set by the `update` func!
-    pixel_delta_u: Vector3<f32>,
-    pixel_delta_v: Vector3<f32>,
-    top_left_location: Vector3<f32>,
+    pixel_delta_u: Vector3<f64>,
+    pixel_delta_v: Vector3<f64>,
+    top_left_location: Vector3<f64>,
 }
 
 impl Camera {
     pub fn new(resolution: PixelCoord<u32>) -> Camera {
         return Camera {
-            resolution: PixelCoord::new(resolution[0] as f32, resolution[1] as f32),
+            resolution: PixelCoord::new(resolution[0] as f64, resolution[1] as f64),
             focal_length: 1.0,
             viewport_height: 2.0,
             position: Point3::new(0.0, 0.0, 0.0),
@@ -35,19 +35,19 @@ impl Camera {
     }
 
     pub fn update(&mut self) {
-        let aspect: f32 = self.resolution.x / self.resolution.y;
-        let viewport_width: f32 = self.viewport_height * aspect;
+        let aspect: f64 = self.resolution.x / self.resolution.y;
+        let viewport_width: f64 = self.viewport_height * aspect;
 
         // Calculate viewport stuff
-        let viewport_u: Vector3<f32> = Vector3::new(viewport_width, 0.0, 0.0);
-        let viewport_v: Vector3<f32> = Vector3::new(0.0, -self.viewport_height, 0.0);
+        let viewport_u: Vector3<f64> = Vector3::new(viewport_width, 0.0, 0.0);
+        let viewport_v: Vector3<f64> = Vector3::new(0.0, -self.viewport_height, 0.0);
 
         // Calculate pixel deltas
         self.pixel_delta_u = viewport_u / self.resolution.x;
         self.pixel_delta_v = viewport_v / self.resolution.y;
 
         // Calculate the location of the upper left pixel
-        let top_left: Vector3<f32> = Vector3::new(
+        let top_left: Vector3<f64> = Vector3::new(
             self.position.x,
             self.position.y,
             self.position.z - self.focal_length,
@@ -57,9 +57,9 @@ impl Camera {
     }
 
     pub fn get_ray(&self, pixel: PixelCoord<u32>) -> Ray {
-        let pixel_center: Vector3<f32> = self.top_left_location
-            + self.pixel_delta_u * pixel.x as f32
-            + self.pixel_delta_v * pixel.y as f32;
+        let pixel_center: Vector3<f64> = self.top_left_location
+            + self.pixel_delta_u * pixel.x as f64
+            + self.pixel_delta_v * pixel.y as f64;
 
         let mut rng = rand::thread_rng();
         let ray_direction = pixel_center

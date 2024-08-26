@@ -12,13 +12,13 @@ pub struct SceneObject {
     pub node_index: usize,
 }
 
-impl Bounded<f32, 3> for SceneObject {
-    fn aabb(&self) -> Aabb<f32, 3> {
+impl Bounded<f64, 3> for SceneObject {
+    fn aabb(&self) -> Aabb<f64, 3> {
         self.geometry.aabb()
     }
 }
 
-impl BHShape<f32, 3> for SceneObject {
+impl BHShape<f64, 3> for SceneObject {
     fn set_bh_node_index(&mut self, index: usize) {
         self.node_index = index;
     }
@@ -33,13 +33,13 @@ pub struct Scene {
 }
 
 impl Scene {
-    pub fn build_bvh(&mut self) -> Bvh<f32, 3> {
+    pub fn build_bvh(&mut self) -> Bvh<f64, 3> {
         Bvh::build_par(&mut self.objects)
     }
 
     pub fn intersect<'a>(
         &'a self,
-        bvh: &'a Bvh<f32, 3>,
+        bvh: &'a Bvh<f64, 3>,
         ray: Rc<Ray>,
     ) -> Vec<&'a Box<SceneObject>> {
         let bvh_ray = ray.to_bvh_ray();

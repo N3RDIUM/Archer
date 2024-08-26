@@ -7,10 +7,14 @@ use crate::materials::base::Material;
 pub struct PerfectMirror {}
 
 impl Material for PerfectMirror {
-    fn bounce(&self, incoming: &Ray, hit_point: Point3<f32>, normal: Normal<f32>) -> Ray {
+    fn bounce(&self, incoming: &Ray, hit_point: Point3<f64>, normal: Normal<f64>) -> Ray {
         let mut bounced = Ray::new_empty();
+
+        let v = incoming.direction.normalize();
+        let n = normal.normalize();
+
         bounced.origin = hit_point;
-        bounced.direction = incoming.direction - 2.0 * incoming.direction.dot(&normal) * normal;
+        bounced.direction = v - 2.0 * v.dot(&n) * n;
 
         return bounced;
     }
@@ -18,10 +22,10 @@ impl Material for PerfectMirror {
     fn add_color(
         &self,
         incoming: &Ray,
-        hit_point: Point3<f32>,
-        normal: Vector3<f32>,
-        color: &Color<f32>
-    ) -> Point3<f32> {
+        hit_point: Point3<f64>,
+        normal: Vector3<f64>,
+        color: &Color<f64>
+    ) -> Point3<f64> {
         let _ = (incoming, hit_point, normal);
         return *color;
     }
