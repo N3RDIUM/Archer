@@ -16,6 +16,8 @@ __Currently working on:__ Ray bounces, reflection, tiling/chunking for efficient
 
 ![Latest render](./archer/output.png)
 
+Render time: ~10sec on Intel i5 11th gen (16 max bounces, 128 samples per pixel)
+
 ## Thanks and Citations
 
 - [_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html): for showing how to do stuff

@@ -42,9 +42,9 @@ fn main() {
     };
 
     let ground_mtl = Diffuse {
-        color: Color::new(200.0, 200.0, 200.0),
-        roughness: 0.24,
-        albedo: 0.74
+        color: Color::new(128.0, 128.0, 256.0),
+        roughness: 0.242,
+        albedo: 0.742
     };
     let ground_geom = Sphere {
         radius: 1000.0,
