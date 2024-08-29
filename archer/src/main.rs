@@ -72,7 +72,7 @@ fn main() {
     };
 
     let params = RenderParameters {
-        max_bounces: 16,
+        max_bounces: 8,
         samples: 128
     };
     
