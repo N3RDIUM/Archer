@@ -5,18 +5,20 @@ A rusty ray tracing engine being built to run with a decent frame rate even on C
 Every line of code is written with extensibility, hackability and the project's future in mind. Although it is kinda dirty at the moment, it will
 get good eventually, possibly turning into the best ray tracer on the planet.
 
-__Currently working on:__ Ray bounces, reflection, tiling/chunking for efficient parallelism.
+__Currently working on:__ Tiling/chunking for efficient parallelism, Optimisations, SDL2 Window rendering.
 
 - [x] Basic Sphere [Devlog 1]
-- [ ] Multiple Reflections + BVH [Devlog 2]
-- [ ] Refraction [Devlog 3]
+- [x] Multiple Reflections + BVH [Devlog 2]
+- [ ] Optimisations [Devlog 3]
+- [ ] Refraction [Devlog 4]
+- [ ] More optimisations? [Devlog 5]
 - [ ] More stuff coming soon!
 
 ## Latest Render
 
 ![Latest render](./archer/output.png)
 
-Render time: 5.361 seconds on Intel i5 11th gen (8 max bounces, 128 samples per pixel)
+Render time: ~20 seconds on Intel i5 11th gen (8 max bounces, 64 samples per pixel)
 
 ## Thanks and Citations
 
