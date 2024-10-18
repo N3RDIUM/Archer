@@ -14,61 +14,51 @@ use archer::tracer::{RenderParameters, Tracer};
 use archer::vectors::{Color, PixelCoord};
 
 fn main() {
-    const RESOLUTION: PixelCoord<u32> = PixelCoord::new(1280, 720);
-    const TILE: PixelCoord<u32> = PixelCoord::new(80, 80);
+    const RESOLUTION: PixelCoord<u32> = PixelCoord::new(1920, 1080);
+    const TILE: PixelCoord<u32> = PixelCoord::new(40, 40);
 
-    let im: image::ImageBuffer<Rgb<u8>, Vec<u8>> = RgbImage::new(RESOLUTION.x, RESOLUTION.y);
+    let im: RgbImage = RgbImage::new(RESOLUTION.x, RESOLUTION.y);
     let mut camera = Camera::new(RESOLUTION);
     camera.update();
 
-    // Add some spheres
-    let material: PerfectMirror = PerfectMirror {};
-    let sphere: Sphere = Sphere {
-        radius: 1.0,
-        position: Point3::new(1.0, 0.0, -4.0),
-    };
-    let ball: SceneObject = SceneObject {
-        geometry: Box::new(sphere),
-        material: Box::new(material),
-        node_index: 0,
-    };
+    // Create materials and spheres
+    let spheres = vec![
+        Box::new(SceneObject {
+            geometry: Box::new(Sphere {
+                radius: 1.0,
+                position: Point3::new(1.0, 0.0, -4.0),
+            }),
+            material: Box::new(PerfectMirror {}),
+            node_index: 0,
+        }),
+        Box::new(SceneObject {
+            geometry: Box::new(Sphere {
+                radius: 1.0,
+                position: Point3::new(-1.0, 0.0, -4.0),
+            }),
+            material: Box::new(NormalMaterial {}),
+            node_index: 0,
+        }),
+        Box::new(SceneObject {
+            geometry: Box::new(Sphere {
+                radius: 1000.0,
+                position: Point3::new(0.0, -1001.0, 0.0),
+            }),
+            material: Box::new(Diffuse {
+                color: Color::new(128.0, 128.0, 256.0),
+                roughness: 0.242,
+                albedo: 0.742,
+            }),
+            node_index: 0,
+        }),
+    ];
 
-    let material1 = NormalMaterial {};
-    let sphere1: Sphere = Sphere {
-        radius: 1.0,
-        position: Point3::new(-1.0, 0.0, -4.0),
-    };
-    let otherball: SceneObject = SceneObject {
-        geometry: Box::new(sphere1),
-        material: Box::new(material1),
-        node_index: 0,
-    };
-
-    let ground_mtl = Diffuse {
-        color: Color::new(128.0, 128.0, 256.0),
-        roughness: 0.242,
-        albedo: 0.742,
-    };
-    let ground_geom = Sphere {
-        radius: 1000.0,
-        position: Point3::new(0.0, -1001.0, 0.0),
-    };
-    let ground = SceneObject {
-        geometry: Box::new(ground_geom),
-        material: Box::new(ground_mtl),
-        node_index: 0,
-    };
-
-    // Create the scene
-    let mut scene: Scene = Scene { objects: vec![] };
-    scene.add(ball);
-    scene.add(otherball);
-    scene.add(ground);
-
+    // Create the scene and build BVH
+    let mut scene = Scene { objects: spheres };
     let bvh = scene.build_bvh();
 
-    // Finally, make the tracer and let the magic happen!
-    let tracer: Tracer = Tracer {
+    // Create tracer
+    let tracer = Tracer {
         scene: &scene,
         camera: &camera,
         bvh: &bvh,
@@ -79,50 +69,42 @@ fn main() {
         samples: 64,
     };
 
-    let x: Vec<u32> = (0..(RESOLUTION.x / TILE.x)).collect();
-    let y: Vec<u32> = (0..(RESOLUTION.y / TILE.y)).collect();
-
     let now = Instant::now();
     let imutex = Mutex::new(im.clone());
 
-    let nothing = x.par_iter().map(|tile_x| {
-        let another_nothing = y.par_iter().map(|tile_y| {
-            let black: Color<f64> = Color::new(0.0, 0.0, 0.0);
-            let mut pixels: Vec<Vec<Color<f64>>> =
-                vec![vec![black; TILE.x as usize]; TILE.y as usize];
+    let tiles_x = (0..(RESOLUTION.x / TILE.x)).collect::<Vec<_>>();
+    let tiles_y = (0..(RESOLUTION.y / TILE.y)).collect::<Vec<_>>();
 
-            // Render first
-            for x in 0..(TILE.x) {
-                for y in 0..(TILE.y) {
+    tiles_x.par_iter().for_each(|tile_x| {
+        tiles_y.par_iter().for_each(|tile_y| {
+            let mut pixels =
+                vec![vec![Color::new(0.0, 0.0, 0.0); TILE.y as usize]; TILE.x as usize];
+
+            // Render pixels in the tile
+            for x in 0..TILE.x {
+                for y in 0..TILE.y {
                     let pixel_coord = PixelCoord::new(tile_x * TILE.x + x, tile_y * TILE.y + y);
-                    let final_color = tracer.get_pixel(&pixel_coord, &params);
-                    pixels[x as usize][y as usize] = final_color;
+                    pixels[x as usize][y as usize] = tracer.get_pixel(&pixel_coord, &params);
                 }
             }
 
-            // Then wait for access and write the data to the image.
+            // Write pixels to the image
             let mut image = imutex.lock().unwrap();
-            for x in 0..(TILE.x) {
-                for y in 0..(TILE.y) {
+            for x in 0..TILE.x {
+                for y in 0..TILE.y {
                     let color = pixels[x as usize][y as usize];
                     let pixel = image.get_pixel_mut(tile_x * TILE.x + x, tile_y * TILE.y + y);
                     *pixel = Rgb([color.x as u8, color.y as u8, color.z as u8]);
                 }
             }
-        });
 
-        let mut sth: Vec<()> = vec![];
-        another_nothing.collect_into_vec(&mut sth);
-        println!("Scanline {tile_x} finished rendering.");
+            println!("Tile ({}, {}) finished rendering.", tile_x, tile_y);
+        });
     });
 
-    let mut sth: Vec<()> = vec![];
-    nothing.collect_into_vec(&mut sth);
-    println!("Render complete.");
-
-    let elapsed: f64 = now.elapsed().as_secs_f64();
-    let fps: f64 = 1.0 / elapsed;
-    println!("One frame took {elapsed} seconds. That's {fps} FPS!");
+    let elapsed = now.elapsed().as_secs_f64();
+    let fps = 1.0 / elapsed;
+    println!("Render complete in {elapsed} seconds. That's {fps} FPS!");
 
     println!("Saving image to `output.png`...");
     let image = imutex.lock().unwrap();

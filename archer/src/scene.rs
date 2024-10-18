@@ -1,11 +1,14 @@
+use bvh::{
+    aabb::{Aabb, Bounded},
+    bounding_hierarchy::{BHShape, BoundingHierarchy},
+    bvh::Bvh,
+};
 use std::rc::Rc;
-use bvh::bvh::Bvh;
-use bvh::aabb::{Aabb, Bounded};
-use bvh::bounding_hierarchy::{BHShape, BoundingHierarchy};
 
-use crate::ray::Ray;
-use crate::materials::base::Material;
 use crate::geometries::base::Geometry;
+use crate::materials::base::Material;
+use crate::ray::Ray;
+
 pub struct SceneObject {
     pub geometry: Box<dyn Geometry + Send + Sync>,
     pub material: Box<dyn Material + Send + Sync>,
@@ -43,12 +46,11 @@ impl Scene {
         ray: Rc<Ray>,
     ) -> Vec<&'a Box<SceneObject>> {
         let bvh_ray = ray.to_bvh_ray();
-        return bvh
-            .nearest_traverse_iterator(&bvh_ray, &self.objects)
-            .collect();
+        bvh.nearest_traverse_iterator(&bvh_ray, &self.objects)
+            .collect()
     }
 
     pub fn add(&mut self, object: SceneObject) {
-        self.objects.push(Box::new(object))
+        self.objects.push(Box::new(object));
     }
 }

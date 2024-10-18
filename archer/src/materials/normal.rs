@@ -1,29 +1,27 @@
 use nalgebra::{Point3, Vector3};
 
+use crate::materials::base::Material;
 use crate::ray::Ray;
 use crate::vectors::{Color, Normal};
-use crate::materials::base::Material;
 
-pub struct NormalMaterial {}
+pub struct NormalMaterial;
 
 impl Material for NormalMaterial {
-    fn bounce(&self, incoming: &Ray, hit_point: Point3<f64>, normal: Normal<f64>) -> Ray {
-        let _ = (incoming, hit_point, normal);
-        return Ray::new_empty();
+    fn bounce(&self, _incoming: &Ray, _hit_point: Point3<f64>, _normal: Normal<f64>) -> Ray {
+        Ray::new_empty()
     }
 
     fn add_color(
         &self,
-        incoming: &Ray,
-        hit_point: Point3<f64>,
+        _incoming: &Ray,
+        _hit_point: Point3<f64>,
         normal: Vector3<f64>,
-        color: &Color<f64>
-    ) -> Point3<f64> {
-        let _ = (incoming, hit_point, color);
-        return Color::new(
-            0.5 * (normal.x + 1.0) * 255.0, 
-            0.5 * (normal.y + 1.0) * 255.0, 
-            0.5 * (normal.z + 1.0) * 255.0, 
-        );
+        _color: &Color<f64>,
+    ) -> Color<f64> {
+        Color::new(
+            0.5 * (normal.x + 1.0) * 255.0,
+            0.5 * (normal.y + 1.0) * 255.0,
+            0.5 * (normal.z + 1.0) * 255.0,
+        )
     }
 }

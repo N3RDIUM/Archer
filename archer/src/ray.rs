@@ -9,18 +9,18 @@ pub struct Ray {
 }
 
 impl Ray {
-    pub fn new_empty() -> Ray {
-        return Ray {
+    pub fn new_empty() -> Self {
+        Ray {
             origin: Point3::new(f64::NAN, f64::NAN, f64::NAN),
             direction: Vector3::new(f64::NAN, f64::NAN, f64::NAN),
-        };
+        }
     }
 
     pub fn position_at(self, t: f64) -> Point3<f64> {
-        return self.origin + t * self.direction;
+        self.origin + t * self.direction
     }
 
     pub fn to_bvh_ray(self) -> BvhRay<f64, 3> {
-        return BvhRay::new(self.origin, self.direction);
+        BvhRay::new(self.origin, self.direction)
     }
 }
