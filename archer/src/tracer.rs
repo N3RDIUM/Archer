@@ -1,6 +1,7 @@
 use bvh::bvh::Bvh;
 use core::f64;
 use nalgebra::distance;
+use rayon::prelude::*;
 use std::rc::Rc;
 
 use crate::camera::Camera;
@@ -95,15 +96,20 @@ impl Tracer<'_> {
     }
 
     pub fn get_pixel(&self, pixel: &PixelCoord<u32>, parameters: &RenderParameters) -> Color<f64> {
-        let mut color = Color::new(0.0, 0.0, 0.0);
+        let samples: Vec<Color<f64>> = (0..parameters.samples)
+            .into_par_iter() // Use parallel iterator
+            .map(|_| self.sample(pixel, parameters.max_bounces)) // Sample for each iteration
+            .collect(); // Collect results into a vector
 
-        for _ in 0..parameters.samples {
-            let sample = self.sample(pixel, parameters.max_bounces);
+        // Sum up the colors from all samples
+        let mut color = Color::new(0.0, 0.0, 0.0);
+        for sample in samples {
             color.x += sample.x;
             color.y += sample.y;
             color.z += sample.z;
         }
 
+        // Average the color
         color.x /= parameters.samples as f64;
         color.y /= parameters.samples as f64;
         color.z /= parameters.samples as f64;
