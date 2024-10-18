@@ -1,7 +1,7 @@
 use nalgebra::{Point3, Vector3};
 
 use crate::ray::Ray;
-use crate::vectors::{Color, Normal};
+use crate::vectors::{ColorVector, Normal};
 
 pub trait Material {
     fn bounce(&self, incoming: &Ray, hit_point: Point3<f64>, normal: Normal<f64>) -> Ray;
@@ -10,8 +10,8 @@ pub trait Material {
         incoming: &Ray,
         hit_point: Point3<f64>,
         normal: Normal<f64>,
-        previous_color: &Color<f64>,
-    ) -> Color<f64>;
+        previous_color: &ColorVector<f64>,
+    ) -> ColorVector<f64>;
 }
 
 // Dummy material that does nothing
@@ -30,8 +30,8 @@ impl Material for BaseMaterial {
         _incoming: &Ray,
         _hit_point: Point3<f64>,
         _normal: Normal<f64>,
-        _previous_color: &Color<f64>,
-    ) -> Color<f64> {
-        Color::new(0.0, 0.0, 0.0)
+        _previous_color: &ColorVector<f64>,
+    ) -> ColorVector<f64> {
+        ColorVector::new(0.0, 0.0, 0.0)
     }
 }

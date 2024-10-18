@@ -3,10 +3,10 @@ use rand::prelude::*;
 
 use crate::materials::base::Material;
 use crate::ray::Ray;
-use crate::vectors::{Color, Normal};
+use crate::vectors::{ColorVector, Normal};
 
 pub struct Diffuse {
-    pub color: Color<f64>,
+    pub color: ColorVector<f64>,
     pub roughness: f64,
     pub albedo: f64,
 }
@@ -37,9 +37,9 @@ impl Material for Diffuse {
         _incoming: &Ray,
         _hit_point: Point3<f64>,
         _normal: Vector3<f64>,
-        previous_color: &Color<f64>,
-    ) -> Color<f64> {
-        Color::new(
+        previous_color: &ColorVector<f64>,
+    ) -> ColorVector<f64> {
+        ColorVector::new(
             (self.color.x * (1.0 - self.albedo) + previous_color.x * self.albedo) / 2.0,
             (self.color.y * (1.0 - self.albedo) + previous_color.y * self.albedo) / 2.0,
             (self.color.z * (1.0 - self.albedo) + previous_color.z * self.albedo) / 2.0,

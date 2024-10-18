@@ -8,7 +8,7 @@ use crate::camera::Camera;
 use crate::hitinfo::HitInfo;
 use crate::ray::Ray;
 use crate::scene::{Scene, SceneObject};
-use crate::vectors::{Color, PixelCoord};
+use crate::vectors::{ColorVector, PixelCoord};
 
 pub struct RenderParameters {
     pub max_bounces: u32,
@@ -66,8 +66,8 @@ impl Tracer<'_> {
         hit_info
     }
 
-    fn sample(&self, pixel: &PixelCoord<u32>, max_bounces: u32) -> Color<f64> {
-        let mut color = Color::new(0.0, 0.0, 0.0);
+    fn sample(&self, pixel: &PixelCoord<u32>, max_bounces: u32) -> ColorVector<f64> {
+        let mut color = ColorVector::new(0.0, 0.0, 0.0);
         let mut hit_info = Vec::new();
         let initial_ray = self.camera.get_ray(*pixel);
 
@@ -95,21 +95,25 @@ impl Tracer<'_> {
         color
     }
 
-    pub fn get_pixel(&self, pixel: &PixelCoord<u32>, parameters: &RenderParameters) -> Color<f64> {
-        let samples: Vec<Color<f64>> = (0..parameters.samples)
+    pub fn get_pixel(
+        &self,
+        pixel: &PixelCoord<u32>,
+        parameters: &RenderParameters,
+    ) -> ColorVector<f64> {
+        let samples: Vec<ColorVector<f64>> = (0..parameters.samples)
             .into_par_iter() // Use parallel iterator
             .map(|_| self.sample(pixel, parameters.max_bounces)) // Sample for each iteration
             .collect(); // Collect results into a vector
 
-        // Sum up the colors from all samples
-        let mut color = Color::new(0.0, 0.0, 0.0);
+        // Sum up the ColorVectors from all samples
+        let mut color = ColorVector::new(0.0, 0.0, 0.0);
         for sample in samples {
             color.x += sample.x;
             color.y += sample.y;
             color.z += sample.z;
         }
 
-        // Average the color
+        // Average the ColorVector
         color.x /= parameters.samples as f64;
         color.y /= parameters.samples as f64;
         color.z /= parameters.samples as f64;
