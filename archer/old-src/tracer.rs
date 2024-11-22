@@ -57,7 +57,7 @@ impl Tracer<'_> {
                         hit_point,
                         normal,
                         bounced: new_bounce,
-                        object: Box::new(object.as_ref()),
+                        object: Box::new(object.as_ref()).into(),
                     });
                 }
             }

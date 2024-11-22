@@ -4,14 +4,15 @@ use bvh::{
     bvh::Bvh,
 };
 use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::geometries::base::Geometry;
 use crate::materials::base::Material;
 use crate::ray::Ray;
 
 pub struct SceneObject {
-    pub geometry: Box<dyn Geometry + Send + Sync>,
-    pub material: Box<dyn Material + Send + Sync>,
+    pub geometry: Arc<dyn Geometry + Send + Sync>,
+    pub material: Arc<dyn Material + Send + Sync>,
     pub node_index: usize,
 }
 

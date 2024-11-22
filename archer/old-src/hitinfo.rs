@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use nalgebra::Point3;
 
 use crate::ray::Ray;
@@ -9,5 +11,5 @@ pub struct HitInfo<'a> {
     pub hit_point: Point3<f64>,
     pub normal: Normal<f64>,
     pub bounced: Ray,
-    pub object: Box<&'a SceneObject>,
+    pub object: Arc<&'a SceneObject>,
 }
