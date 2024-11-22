@@ -6,9 +6,24 @@ use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
 
+use flume::unbounded;
+use json::{object, JsonValue};
+
 fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
+
+    // Just testing flume.
+    let data: JsonValue = object! {
+        foo: false,
+        bar: null,
+        answer: 42,
+        list: [null, "world", true]
+    };
+
+    let (tx, rx) = unbounded::<JsonValue>();
+    tx.send(data.clone()).unwrap();
+    assert_eq!(rx.recv().unwrap(), data);
 
     let window = video_subsystem
         .window("Archer", 480, 360)

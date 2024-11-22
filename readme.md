@@ -5,9 +5,9 @@ A rusty ray tracing engine being built to run with a decent frame rate even on C
 Every line of code is written with extensibility, hackability and the project's future in mind.
 Currently, the project is undergoing a major rewrite, this time from scratch.
 
-__Currently working on:__ SDL2 Window rendering.
+__Currently working on:__ The bit where the actual ray tracing happens
 
-- [x] Basic Sphere [Devlog 1]
+- [ ] Basic Sphere [Devlog 1]
 - [ ] Multiple Reflections + BVH [Devlog 2]
 - [ ] Optimisations [Devlog 3]
 - [ ] Refraction [Devlog 4]
