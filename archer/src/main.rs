@@ -1,4 +1,5 @@
-use std::time::Duration;
+// use std::time::Duration;
+use std::time::Instant;
 
 extern crate sdl2;
 use sdl2::event::Event;
@@ -6,27 +7,12 @@ use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
 
-use flume::unbounded;
-use json::{object, JsonValue};
-
 fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
 
-    // Just testing flume.
-    let data: JsonValue = object! {
-        foo: false,
-        bar: null,
-        answer: 42,
-        list: [null, "world", true]
-    };
-
-    let (tx, rx) = unbounded::<JsonValue>();
-    tx.send(data.clone()).unwrap();
-    assert_eq!(rx.recv().unwrap(), data);
-
     let window = video_subsystem
-        .window("Archer", 480, 360)
+        .window("Archer", 1280, 720)
         .position_centered()
         .opengl()
         .build()
@@ -42,6 +28,8 @@ fn main() -> Result<(), String> {
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     'running: loop {
+        let now = Instant::now();
+
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
 
@@ -57,9 +45,14 @@ fn main() -> Result<(), String> {
         }
 
         canvas.clear();
-        canvas.copy(&texture, None, None)?;
+        // canvas.copy(&texture, None, None)?;
         canvas.present();
 
-        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
+        // ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
+
+        let elapsed = now.elapsed().as_secs_f64();
+        let fps = 1.0 / elapsed;
+
+        print!("\rFrame rendered in {elapsed} seconds. That's {fps} FPS!");
     }
 }

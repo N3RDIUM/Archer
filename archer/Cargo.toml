@@ -5,9 +5,3 @@ edition = "2021"
 
 [dependencies]
 sdl2 = "0.37"
-rayon = "1.10"
-nalgebra = "0.33.0"
-bvh = "0.10.0"
-rand = "0.8.5"
-flume = "0.11.1"
-json = "0.12.4"
