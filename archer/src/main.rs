@@ -23,16 +23,13 @@ fn main() -> Result<(), String> {
 
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
-    let texture = texture_creator
+    
+    let mut texture = texture_creator
         .create_texture_streaming(PixelFormatEnum::RGB24, 1280, 720)
         .map_err(|e| e.to_string())?;
-
     let mut camera = Camera::new();
     camera.resolution = PixelCoord::new(1280, 720);
-    let tracer = Tracer {
-        camera,
-        texture: &texture
-    };
+    let mut tracer = Tracer::new(camera);
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 
@@ -52,6 +49,8 @@ fn main() -> Result<(), String> {
                 _ => {}
             }
         }
+
+        tracer.render(&mut texture);
 
         canvas.clear();
         canvas.copy(&texture, None, None)?;
