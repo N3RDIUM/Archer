@@ -1,4 +1,3 @@
-// use std::time::Duration;
 use std::time::Instant;
 
 extern crate sdl2;
@@ -22,7 +21,7 @@ fn main() -> Result<(), String> {
     let texture_creator = canvas.texture_creator();
 
     let texture = texture_creator
-        .create_texture_streaming(PixelFormatEnum::RGB24, 480, 360)
+        .create_texture_streaming(PixelFormatEnum::RGB24, 1280, 720)
         .map_err(|e| e.to_string())?;
 
     let mut event_pump = sdl_context.event_pump().unwrap();
@@ -45,10 +44,8 @@ fn main() -> Result<(), String> {
         }
 
         canvas.clear();
-        // canvas.copy(&texture, None, None)?;
+        canvas.copy(&texture, None, None)?;
         canvas.present();
-
-        // ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
 
         let elapsed = now.elapsed().as_secs_f64();
         let fps = 1.0 / elapsed;
