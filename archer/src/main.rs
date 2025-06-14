@@ -1,3 +1,7 @@
+use archer::tracer::Tracer;
+use archer::camera::Camera;
+use archer::types::PixelCoord;
+
 use std::time::Instant;
 
 extern crate sdl2;
@@ -19,10 +23,16 @@ fn main() -> Result<(), String> {
 
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
     let texture_creator = canvas.texture_creator();
-
     let texture = texture_creator
         .create_texture_streaming(PixelFormatEnum::RGB24, 1280, 720)
         .map_err(|e| e.to_string())?;
+
+    let mut camera = Camera::new();
+    camera.resolution = PixelCoord::new(1280, 720);
+    let tracer = Tracer {
+        camera,
+        texture: &texture
+    };
 
     let mut event_pump = sdl_context.event_pump().unwrap();
 

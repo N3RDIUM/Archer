@@ -1,7 +1,7 @@
 use crate::types::{Position, Direction, PixelCoord};
 use crate::ray::Ray;
 
-struct Camera {
+pub struct Camera {
     pub resolution: PixelCoord<u16>,
     pub focal_length: f64,
     pub viewport_height: f64,
