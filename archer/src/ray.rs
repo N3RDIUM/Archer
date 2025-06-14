@@ -9,8 +9,8 @@ pub struct Ray {
 impl Ray {
     pub fn new() -> Ray {
         return Ray {
-            origin: Position::new(f64::NAN, f64::NAN, f64::NAN),
-            direction: Direction::new(f64::NAN, f64::NAN, f64::NAN)
+            origin: Position::<f64>::origin(),
+            direction: Direction::<f64>::zeros(),
         }
     }
 
