@@ -1,5 +1,7 @@
 pub mod manager;
-pub use manager::ComputeManager;
+pub use manager::{
+    ComputeManager,
+    ToGPU,
+    ToCPU
+};
 
-pub mod to_gpu;
-pub use to_gpu::ToGPU;

@@ -17,6 +17,16 @@ pub struct ComputeManager {
     queue: Queue
 }
 
+pub trait ToGPU {
+    type GPUType: bytemuck::Pod;
+    fn to_gpu(&self) -> Self::GPUType;
+}
+
+pub trait ToCPU {
+    type CPUType;
+    fn to_gpu(&self) -> Self::CPUType;
+}
+
 impl ComputeManager {
     pub async fn new() -> ComputeManager {
         let instance = Instance::new(&InstanceDescriptor {
