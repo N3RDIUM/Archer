@@ -28,4 +28,3 @@ fn main() {
         result = (-b - sqrt(discriminant)) / (2.0 * a);
     }
 }
-

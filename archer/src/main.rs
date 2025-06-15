@@ -1,7 +1,7 @@
-use archer::compute_manager;
+use archer::compute::manager;
 
 fn main() {
-    let result = pollster::block_on(compute_manager::run());
+    let result = pollster::block_on(manager::run());
     println!("Hit distance: {result}");
 }
 

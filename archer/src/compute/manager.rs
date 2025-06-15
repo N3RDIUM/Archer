@@ -1,3 +1,4 @@
+use wgpu::*;
 use wgpu::util::DeviceExt;
 
 #[repr(C)]
@@ -16,19 +17,21 @@ struct Sphere {
     radius: f32,
 }
 
+pub struct ComputeManager {}
+
 pub async fn run() -> f32 {
     // ==== WGPU Init ====
-    let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor {
-        backends: wgpu::Backends::VULKAN,
-        flags: wgpu::InstanceFlags::empty(),
+    let instance = Instance::new(&wgpu::InstanceDescriptor {
+        backends: Backends::VULKAN,
+        flags: InstanceFlags::empty(),
         backend_options: Default::default(),
     });
     let adapter = instance
-        .request_adapter(&wgpu::RequestAdapterOptions::default())
+        .request_adapter(&RequestAdapterOptions::default())
         .await
         .expect("No adapter found");
     let (device, queue) = adapter
-        .request_device(&wgpu::DeviceDescriptor::default())
+        .request_device(&DeviceDescriptor::default())
         .await
         .expect("Device request failed");
 
@@ -48,65 +51,65 @@ pub async fn run() -> f32 {
     let result = -1.0f32;
 
     // ==== Buffers ====
-    let ray_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+    let ray_buffer = device.create_buffer_init(&util::BufferInitDescriptor {
         label: Some("Ray Buffer"),
         contents: bytemuck::cast_slice(&[ray]),
-        usage: wgpu::BufferUsages::STORAGE,
+        usage: BufferUsages::STORAGE,
     });
 
-    let sphere_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+    let sphere_buffer = device.create_buffer_init(&util::BufferInitDescriptor {
         label: Some("Sphere Buffer"),
         contents: bytemuck::cast_slice(&[sphere]),
-        usage: wgpu::BufferUsages::STORAGE,
+        usage: BufferUsages::STORAGE,
     });
 
-    let result_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+    let result_buffer = device.create_buffer_init(&util::BufferInitDescriptor {
         label: Some("Result Buffer"),
         contents: bytemuck::cast_slice(&[result]),
-        usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC,
+        usage: BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC,
     });
 
-    let result_readback = device.create_buffer(&wgpu::BufferDescriptor {
+    let result_readback = device.create_buffer(&BufferDescriptor {
         label: Some("Result Readback Buffer"),
         size: std::mem::size_of::<f32>() as u64,
-        usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
+        usage: BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
         mapped_at_creation: false,
     });
 
     // ==== Shader ====
-    let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+    let shader = device.create_shader_module(ShaderModuleDescriptor {
         label: Some("Ray-Sphere Intersection Compute"),
-        source: wgpu::ShaderSource::Wgsl(include_str!("ray-sphere.wgsl").into()),
+        source: ShaderSource::Wgsl(include_str!("./shaders/ray-sphere.wgsl").into()),
     });
 
-    let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+    let bind_group_layout = device.create_bind_group_layout(&BindGroupLayoutDescriptor {
         label: Some("Bind Group Layout"),
         entries: &[
-            wgpu::BindGroupLayoutEntry {
+            BindGroupLayoutEntry {
                 binding: 0,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Storage { read_only: true },
+                visibility: ShaderStages::COMPUTE,
+                ty: BindingType::Buffer {
+                    ty: BufferBindingType::Storage { read_only: true },
                     has_dynamic_offset: false,
                     min_binding_size: None,
                 },
                 count: None,
             },
-            wgpu::BindGroupLayoutEntry {
+            BindGroupLayoutEntry {
                 binding: 1,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Storage { read_only: true },
+                visibility: ShaderStages::COMPUTE,
+                ty: BindingType::Buffer {
+                    ty: BufferBindingType::Storage { read_only: true },
                     has_dynamic_offset: false,
                     min_binding_size: None,
                 },
                 count: None,
             },
-            wgpu::BindGroupLayoutEntry {
+            BindGroupLayoutEntry {
                 binding: 2,
-                visibility: wgpu::ShaderStages::COMPUTE,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Storage { read_only: false },
+                visibility: ShaderStages::COMPUTE,
+                ty: BindingType::Buffer {
+                    ty: BufferBindingType::Storage { read_only: false },
                     has_dynamic_offset: false,
                     min_binding_size: None,
                 },
@@ -115,47 +118,47 @@ pub async fn run() -> f32 {
         ],
     });
 
-    let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+    let bind_group = device.create_bind_group(&BindGroupDescriptor {
         label: Some("Bind Group"),
         layout: &bind_group_layout,
         entries: &[
-            wgpu::BindGroupEntry {
+            BindGroupEntry {
                 binding: 0,
                 resource: ray_buffer.as_entire_binding(),
             },
-            wgpu::BindGroupEntry {
+            BindGroupEntry {
                 binding: 1,
                 resource: sphere_buffer.as_entire_binding(),
             },
-            wgpu::BindGroupEntry {
+            BindGroupEntry {
                 binding: 2,
                 resource: result_buffer.as_entire_binding(),
             },
         ],
     });
 
-    let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+    let pipeline_layout = device.create_pipeline_layout(&PipelineLayoutDescriptor {
         label: Some("Pipeline Layout"),
         bind_group_layouts: &[&bind_group_layout],
         push_constant_ranges: &[],
     });
 
-    let pipeline = device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+    let pipeline = device.create_compute_pipeline(&ComputePipelineDescriptor {
         label: Some("Compute Pipeline"),
         layout: Some(&pipeline_layout),
         module: &shader,
         entry_point: Some("main"),
-        compilation_options: wgpu::PipelineCompilationOptions::default(),
+        compilation_options: PipelineCompilationOptions::default(),
         cache: None,
     });
 
     // ==== Dispatch ====
-    let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+    let mut encoder = device.create_command_encoder(&CommandEncoderDescriptor {
         label: Some("Encoder"),
     });
 
     {
-    let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
+    let mut cpass = encoder.begin_compute_pass(&ComputePassDescriptor {
         label: Some("Compute Pass"),
         timestamp_writes: None,
     });
@@ -169,8 +172,8 @@ pub async fn run() -> f32 {
 
     // ==== Read Result ====
     let buffer_slice = result_readback.slice(..);
-    buffer_slice.map_async(wgpu::MapMode::Read, |_| {});
-    let _ = device.poll(wgpu::MaintainBase::Wait);
+    buffer_slice.map_async(MapMode::Read, |_| {});
+    let _ = device.poll(MaintainBase::Wait);
 
     let data = buffer_slice.get_mapped_range();
     let result = bytemuck::cast_slice::<u8, f32>(&data)[0];
