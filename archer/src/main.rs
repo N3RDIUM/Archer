@@ -1,64 +1,185 @@
-use archer::tracer::Tracer;
-use archer::camera::Camera;
-use archer::types::PixelCoord;
+use wgpu::util::DeviceExt;
 
-use std::time::Instant;
+#[repr(C)]
+#[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+struct Ray {
+    origin: [f32; 3],
+    _pad1: f32,
+    dir: [f32; 3],
+    _pad2: f32,
+}
 
-extern crate sdl2;
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
-use sdl2::pixels::Color;
-use sdl2::pixels::PixelFormatEnum;
+#[repr(C)]
+#[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+struct Sphere {
+    center: [f32; 3],
+    radius: f32,
+}
 
-fn main() -> Result<(), String> {
-    let sdl_context = sdl2::init()?;
-    let video_subsystem = sdl_context.video()?;
+fn main() {
+    pollster::block_on(run());
+}
 
-    let window = video_subsystem
-        .window("Archer", 1280, 720)
-        .position_centered()
-        .opengl()
-        .build()
-        .map_err(|e| e.to_string())?;
+async fn run() {
+    // ==== WGPU Init ====
+    let instance = wgpu::Instance::new(&wgpu::InstanceDescriptor {
+        backends: wgpu::Backends::VULKAN, // or .VULKAN, .all(), etc.
+        flags: wgpu::InstanceFlags::empty(), // or InstanceFlags::VALIDATION if you want extra checks
+        backend_options: Default::default(), // or fine-tune per backend
+    });
+    let adapter = instance
+        .request_adapter(&wgpu::RequestAdapterOptions::default())
+        .await
+        .expect("No adapter found");
+    let (device, queue) = adapter
+        .request_device(&wgpu::DeviceDescriptor::default())
+        .await
+        .expect("Device request failed");
 
-    let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
-    let texture_creator = canvas.texture_creator();
-    
-    let mut texture = texture_creator
-        .create_texture_streaming(PixelFormatEnum::RGB24, 1280, 720)
-        .map_err(|e| e.to_string())?;
-    let mut camera = Camera::new();
-    camera.resolution = PixelCoord::new(1280, 720);
-    let mut tracer = Tracer::new(camera);
+    // ==== Data ====
+    let ray = Ray {
+        origin: [0.0, 0.0, -5.0],
+        _pad1: 0.0,
+        dir: [0.0, 0.0, 1.0],
+        _pad2: 0.0,
+    };
 
-    let mut event_pump = sdl_context.event_pump().unwrap();
+    let sphere = Sphere {
+        center: [0.0, 0.0, 0.0],
+        radius: 1.0,
+    };
 
-    'running: loop {
-        let now = Instant::now();
+    let result = -1.0f32;
 
-        canvas.set_draw_color(Color::RGB(0, 0, 0));
-        canvas.clear();
+    // ==== Buffers ====
+    let ray_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        label: Some("Ray Buffer"),
+        contents: bytemuck::cast_slice(&[ray]),
+        usage: wgpu::BufferUsages::STORAGE,
+    });
 
-        for event in event_pump.poll_iter() {
-            match event {
-                Event::Quit { .. }
-                | Event::KeyDown {
-                    keycode: Some(Keycode::Escape),
-                    ..
-                } => break 'running Ok(()),
-                _ => {}
-            }
-        }
+    let sphere_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        label: Some("Sphere Buffer"),
+        contents: bytemuck::cast_slice(&[sphere]),
+        usage: wgpu::BufferUsages::STORAGE,
+    });
 
-        tracer.render(&mut texture);
+    let result_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        label: Some("Result Buffer"),
+        contents: bytemuck::cast_slice(&[result]),
+        usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC,
+    });
 
-        canvas.clear();
-        canvas.copy(&texture, None, None)?;
-        canvas.present();
+    let result_readback = device.create_buffer(&wgpu::BufferDescriptor {
+        label: Some("Result Readback Buffer"),
+        size: std::mem::size_of::<f32>() as u64,
+        usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
+        mapped_at_creation: false,
+    });
 
-        let elapsed = now.elapsed().as_secs_f64();
-        let fps = 1.0 / elapsed;
+    // ==== Shader ====
+    let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+        label: Some("Compute Shader"),
+        source: wgpu::ShaderSource::Wgsl(include_str!("ray-sphere.wgsl").into()),
+    });
 
-        print!("\rFrame rendered in {elapsed} seconds. That's {fps} FPS!");
+    let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+        label: Some("Bind Group Layout"),
+        entries: &[
+            wgpu::BindGroupLayoutEntry {
+                binding: 0,
+                visibility: wgpu::ShaderStages::COMPUTE,
+                ty: wgpu::BindingType::Buffer {
+                    ty: wgpu::BufferBindingType::Storage { read_only: true },
+                    has_dynamic_offset: false,
+                    min_binding_size: None,
+                },
+                count: None,
+            },
+            wgpu::BindGroupLayoutEntry {
+                binding: 1,
+                visibility: wgpu::ShaderStages::COMPUTE,
+                ty: wgpu::BindingType::Buffer {
+                    ty: wgpu::BufferBindingType::Storage { read_only: true },
+                    has_dynamic_offset: false,
+                    min_binding_size: None,
+                },
+                count: None,
+            },
+            wgpu::BindGroupLayoutEntry {
+                binding: 2,
+                visibility: wgpu::ShaderStages::COMPUTE,
+                ty: wgpu::BindingType::Buffer {
+                    ty: wgpu::BufferBindingType::Storage { read_only: false },
+                    has_dynamic_offset: false,
+                    min_binding_size: None,
+                },
+                count: None,
+            },
+        ],
+    });
+
+    let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+        label: Some("Bind Group"),
+        layout: &bind_group_layout,
+        entries: &[
+            wgpu::BindGroupEntry {
+                binding: 0,
+                resource: ray_buffer.as_entire_binding(),
+            },
+            wgpu::BindGroupEntry {
+                binding: 1,
+                resource: sphere_buffer.as_entire_binding(),
+            },
+            wgpu::BindGroupEntry {
+                binding: 2,
+                resource: result_buffer.as_entire_binding(),
+            },
+        ],
+    });
+
+    let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+        label: Some("Pipeline Layout"),
+        bind_group_layouts: &[&bind_group_layout],
+        push_constant_ranges: &[],
+    });
+
+    let pipeline = device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+        label: Some("Compute Pipeline"),
+        layout: Some(&pipeline_layout),
+        module: &shader,
+        entry_point: Some("main"),
+        compilation_options: wgpu::PipelineCompilationOptions::default(),
+        cache: None,
+    });
+
+    // ==== Dispatch ====
+    let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+        label: Some("Encoder"),
+    });
+
+    {
+    let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
+        label: Some("Compute Pass"),
+        timestamp_writes: None,
+    });
+    cpass.set_pipeline(&pipeline);
+        cpass.set_bind_group(0, &bind_group, &[]);
+        cpass.dispatch_workgroups(1, 1, 1);
     }
+
+    encoder.copy_buffer_to_buffer(&result_buffer, 0, &result_readback, 0, 4);
+    queue.submit(Some(encoder.finish()));
+
+    // ==== Read Result ====
+    let buffer_slice = result_readback.slice(..);
+    buffer_slice.map_async(wgpu::MapMode::Read, |_| {});
+    let _ = device.poll(wgpu::MaintainBase::Wait);
+
+    let data = buffer_slice.get_mapped_range();
+    let result = bytemuck::cast_slice::<u8, f32>(&data)[0];
+    println!("Hit distance: {result}");
+
+    drop(data);
+    result_readback.unmap();
 }
