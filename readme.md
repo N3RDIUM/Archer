@@ -1,11 +1,11 @@
 # Archer
 
 ![Archer Logo](ArcherLogo.png)
-A rusty ray tracing engine being built to run with a decent frame rate even on CPU, allowing for realtime raytracing applications without GPUs.
+Just another rusty ray tracing engine. Hobby project, if you will.
 Every line of code is written with extensibility, hackability and the project's future in mind.
 Currently, the project is undergoing a major rewrite, this time from scratch.
 
-__Currently working on:__ The bit where the actual ray tracing happens
+__Currently working on:__ Learning about GPU compute, will have a basic sphere scene up and running soon
 
 - [ ] Basic Sphere [Devlog 1]
 - [ ] Multiple Reflections + BVH [Devlog 2]
