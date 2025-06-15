@@ -9,4 +9,5 @@ pollster = "0.4.0"
 sdl2 = "0.37"
 wgpu = "25.0.2"
 bytemuck = { version = "1.14", features = ["derive"] }
+rayon = "1.10.0"
 
