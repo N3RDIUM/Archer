@@ -7,7 +7,7 @@ use wgpu::{
     Backends,
     InstanceFlags,
     RequestAdapterOptions,
-    DeviceDescriptor
+    DeviceDescriptor,
 };
 
 pub struct ComputeManager {

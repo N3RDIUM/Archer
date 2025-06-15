@@ -1,7 +1,7 @@
 use std::time::Instant;
 
 use archer::camera::Camera;
-use archer::compute::manager::ComputeManager;
+use archer::compute::ComputeManager;
 use archer::types::PixelCoord;
 
 fn main() {

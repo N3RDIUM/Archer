@@ -1,15 +1,14 @@
 struct CameraParams {
     resolution: vec2<u32>,
-    position: vec3<f32>,
-    _pad1: f32,
+    position: vec4<f32>, // pad
     focal_length: f32,
     viewport_height: f32,
     _pad2: vec2<f32>,
 };
 
 struct GPURay {
-    origin: vec4<f32>,
-    dir: vec4<f32>,
+    origin: vec4<f32>, // pad
+    dir: vec4<f32>, // pad
 };
 
 @group(0) @binding(0)
