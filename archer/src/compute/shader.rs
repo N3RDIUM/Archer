@@ -1,4 +1,18 @@
-use wgpu::*;
+use wgpu::{
+    ShaderModule,
+    BindGroupLayout,
+    PipelineLayout,
+    ComputePipeline,
+    ShaderSource,
+    ShaderModuleDescriptor,
+    PipelineLayoutDescriptor,
+    ComputePipelineDescriptor,
+    PipelineCompilationOptions,
+    BindGroup,
+    ComputePass,
+    Buffer,
+    CommandEncoderDescriptor,
+};
 use wgpu::MaintainBase::WaitForSubmissionIndex;
 use std::fs;
 
@@ -71,10 +85,8 @@ impl ComputeShader {
         });
 
         encoder.copy_buffer_to_buffer(
-            &result_buffer,
-            0,
-            &result_readback,
-            0,
+            &result_buffer, 0,
+            &result_readback, 0,
             result_buffer.size() as u64
         );
         let index = manager.queue.submit(Some(encoder.finish()));
