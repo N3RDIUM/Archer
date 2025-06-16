@@ -8,13 +8,18 @@ use wgpu::{
     InstanceFlags,
     RequestAdapterOptions,
     DeviceDescriptor,
+    CommandEncoder,
+    CommandEncoderDescriptor,
+    CommandBuffer,
+    SubmissionIndex,
 };
+use std::option::Option;
 
 pub struct ComputeManager {
-    instance: Instance,
-    adapter: Adapter,
-    device: Device,
-    queue: Queue
+    pub instance: Instance,
+    pub adapter: Adapter,
+    pub device: Device,
+    pub queue: Queue,
 }
 
 pub trait ToGPU {
@@ -34,10 +39,12 @@ impl ComputeManager {
             flags: InstanceFlags::empty(),
             backend_options: Default::default(),
         });
+
         let adapter = instance
             .request_adapter(&RequestAdapterOptions::default())
             .await
             .expect("No adapter found");
+
         let (device, queue) = adapter
             .request_device(&DeviceDescriptor::default())
             .await
@@ -47,7 +54,7 @@ impl ComputeManager {
             instance,
             adapter,
             device,
-            queue
+            queue,
         }
     }
 }

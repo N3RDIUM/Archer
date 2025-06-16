@@ -5,3 +5,6 @@ pub use manager::{
     ToCPU
 };
 
+pub mod shader;
+pub use shader::ComputeShader;
+

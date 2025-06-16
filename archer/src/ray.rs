@@ -1,5 +1,5 @@
 use crate::types::{Position, Direction};
-use crate::compute::ToGPU;
+use crate::compute::{ToGPU, ToCPU};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Ray {
@@ -12,7 +12,7 @@ pub struct Ray {
 pub struct GPURay {
     pub origin: [f32; 3],
     _pad1: f32,
-    pub dir: [f32; 3],
+    pub direction: [f32; 3],
     _pad2: f32,
 }
 
@@ -42,11 +42,20 @@ impl GPURay {
         GPURay {
             origin: ray.origin.coords.into(),
             _pad1: 0.0,
-            dir: ray.direction.into(),
+            direction: ray.direction.into(),
             _pad2: 0.0
         }
     }
+}
 
-    // todo to_cpu
+impl ToCPU for GPURay {
+    type CPUType = Ray;
+
+    fn to_gpu(&self) -> Self::CPUType {
+        Ray {
+            origin: Position::from(self.origin),
+            direction: Direction::from(self.direction)
+        }
+    }
 }
 

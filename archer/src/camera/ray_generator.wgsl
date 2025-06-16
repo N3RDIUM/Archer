@@ -1,21 +1,24 @@
 struct CameraParams {
     resolution: vec2<u32>,
-    position: vec4<f32>, // pad
+    position: vec3<f32>,
+    _pad1: f32,
     focal_length: f32,
     viewport_height: f32,
     _pad2: vec2<f32>,
 };
 
-struct GPURay {
-    origin: vec4<f32>, // pad
-    dir: vec4<f32>, // pad
+struct Ray {
+    origin: vec3<f32>,
+    _pad1: f32
+    dir: vec3<f32>,
+    _pad2: f32,
 };
 
 @group(0) @binding(0)
 var<uniform> camera: CameraParams;
 
 @group(0) @binding(1)
-var<storage, read_write> ray_buffer: array<GPURay>;
+var<storage, read_write> ray_buffer: array<Ray>;
 
 @compute @workgroup_size(8, 8, 1)
 fn main(@builtin(global_invocation_id) id: vec3<u32>) {
