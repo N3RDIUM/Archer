@@ -12,28 +12,24 @@ use wgpu::{
     ComputePass,
     Buffer,
     CommandEncoderDescriptor,
-    MaintainBase::WaitForSubmissionIndex,
+    PollType,
 };
-use std::fs;
 
 use crate::compute::ComputeManager;
 
 pub struct ComputeShader {
     label: String,
-    path: String,
     pipeline: ComputePipeline,
 }
 
 impl ComputeShader {
-    pub fn new(label: &str, path: &str, bind_group_layout: BindGroupLayout, manager: &ComputeManager) -> Result<ComputeShader, std::io::Error> {
-        let source_str = match fs::read_to_string(path) {
-            Ok(src) => src,
-            Err(err) => {
-                eprintln!("Failed to read shader {}: {}", path, err);
-                return Err(err);
-            },
-        };
-        let source = ShaderSource::Wgsl(source_str.into());
+    pub fn new(
+        label: &str,
+        source: &str,
+        bind_group_layout: BindGroupLayout,
+        manager: &ComputeManager
+    ) -> Result<ComputeShader, std::io::Error> {
+        let source = ShaderSource::Wgsl(source.into());
 
         let shader = manager.device.create_shader_module(ShaderModuleDescriptor { 
             label: Some(label),
@@ -57,7 +53,6 @@ impl ComputeShader {
 
         Ok(ComputeShader {
             label: label.to_string(),
-            path: path.to_string(),
             pipeline
         })
     }
@@ -86,7 +81,7 @@ impl ComputeShader {
         );
         let index = manager.queue.submit(Some(encoder.finish()));
 
-        manager.device.poll(WaitForSubmissionIndex(index));
+        manager.device.poll(PollType::WaitForSubmissionIndex(index));
     }
 }
 
