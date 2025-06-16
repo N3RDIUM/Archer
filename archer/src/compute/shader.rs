@@ -25,11 +25,11 @@ pub struct ComputeShader {
 impl ComputeShader {
     pub fn new(
         label: &str,
-        source: &str,
-        bind_group_layout: BindGroupLayout,
-        manager: &ComputeManager
+        source_str: &str,
+        bind_group_layout: &BindGroupLayout,
+        manager: &ComputeManager<'_>
     ) -> Result<ComputeShader, std::io::Error> {
-        let source = ShaderSource::Wgsl(source.into());
+        let source = ShaderSource::Wgsl(source_str.into());
 
         let shader = manager.device.create_shader_module(ShaderModuleDescriptor { 
             label: Some(label),
@@ -60,7 +60,7 @@ impl ComputeShader {
     pub async fn dispatch(
         &self,
         bind_group: &BindGroup,
-        manager: &mut ComputeManager,
+        manager: &mut ComputeManager<'_>,
         pass: &mut ComputePass<'_>,
         result_buffer: &Buffer,
         result_readback: &Buffer,

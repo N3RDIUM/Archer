@@ -12,14 +12,18 @@ use wgpu::{
     CommandEncoderDescriptor,
     CommandBuffer,
     SubmissionIndex,
+    BindGroupLayout,
 };
-use std::option::Option;
+use std::collections::HashMap;
 
-pub struct ComputeManager {
+use crate::compute::ComputeShader;
+
+pub struct ComputeManager<'a> {
     pub instance: Instance,
     pub adapter: Adapter,
     pub device: Device,
     pub queue: Queue,
+    shaders: HashMap<&'a str, ComputeShader>,
 }
 
 pub trait ToGPU {
@@ -32,8 +36,8 @@ pub trait ToCPU {
     fn to_gpu(&self) -> Self::CPUType;
 }
 
-impl ComputeManager {
-    pub async fn new() -> ComputeManager {
+impl ComputeManager<'_> {
+    pub async fn new() -> ComputeManager<'static> {
         let instance = Instance::new(&InstanceDescriptor {
             backends: Backends::VULKAN,
             flags: InstanceFlags::empty(),
@@ -55,7 +59,17 @@ impl ComputeManager {
             adapter,
             device,
             queue,
+            shaders: HashMap::new(),
         }
+    }
+
+    pub fn load_shader(
+        &mut self,
+        label: &str,
+        source: &str,
+        bind_group_layout: &BindGroupLayout,
+    ) {
+        let shader = ComputeShader::new(label, source, &bind_group_layout, &self);
     }
 }
 
