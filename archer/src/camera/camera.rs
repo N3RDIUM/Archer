@@ -6,7 +6,7 @@ use wgpu::util::*;
 
 use crate::types::{Position, Direction, PixelCoord};
 use crate::compute::ComputeManager;
-use crate::ray::{Ray, GPURay};
+use crate::ray::GPURay;
 
 pub struct Camera {
     pub resolution: PixelCoord<u32>,

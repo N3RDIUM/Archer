@@ -1,7 +1,5 @@
 use wgpu::{
-    ShaderModule,
     BindGroupLayout,
-    PipelineLayout,
     ComputePipeline,
     ShaderSource,
     ShaderModuleDescriptor,
@@ -9,7 +7,6 @@ use wgpu::{
     ComputePipelineDescriptor,
     PipelineCompilationOptions,
     BindGroup,
-    ComputePass,
     Buffer,
     CommandEncoderDescriptor,
     PollType,
@@ -60,7 +57,7 @@ impl ComputeShader {
     pub async fn dispatch<T: bytemuck::Pod>(
         &self,
         bind_group: &BindGroup,
-        mut manager: &mut ComputeManager,
+        manager: &mut ComputeManager,
         result_buffer: &Buffer,
         result_readback: &Buffer,
         result_size: u64,
@@ -90,7 +87,7 @@ impl ComputeShader {
 
         let buffer_slice = result_readback.slice(..);
         buffer_slice.map_async(wgpu::MapMode::Read, |_| {});
-        manager.device.poll(PollType::WaitForSubmissionIndex(index));
+        let _ = manager.device.poll(PollType::WaitForSubmissionIndex(index));
 
         let data = buffer_slice.get_mapped_range();
         let result: Vec<T> = bytemuck::cast_slice(&data).to_vec();

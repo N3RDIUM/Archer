@@ -8,13 +8,8 @@ use wgpu::{
     InstanceFlags,
     RequestAdapterOptions,
     DeviceDescriptor,
-    CommandEncoder,
-    CommandEncoderDescriptor,
-    CommandBuffer,
-    SubmissionIndex,
     BindGroupLayout,
 };
-use std::collections::HashMap;
 
 use crate::compute::ComputeShader;
 
