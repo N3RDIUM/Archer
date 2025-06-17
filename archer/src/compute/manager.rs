@@ -26,16 +26,6 @@ pub struct ComputeManager<'a> {
     shaders: HashMap<&'a str, ComputeShader>,
 }
 
-pub trait ToGPU {
-    type GPUType: bytemuck::Pod;
-    fn to_gpu(&self) -> Self::GPUType;
-}
-
-pub trait ToCPU {
-    type CPUType;
-    fn to_gpu(&self) -> Self::CPUType;
-}
-
 impl ComputeManager<'_> {
     pub async fn new() -> ComputeManager<'static> {
         let instance = Instance::new(&InstanceDescriptor {

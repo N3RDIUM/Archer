@@ -2,7 +2,6 @@ use bytemuck::{Pod, Zeroable};
 
 use crate::types::{Position, Direction, PixelCoord};
 use crate::compute::ComputeManager;
-use crate::compute::ToGPU;
 use crate::ray::Ray;
 
 pub struct Camera {
@@ -36,15 +35,7 @@ impl Camera {
     }
 
     pub fn gen_rays(&self, manager: &ComputeManager) {
-        let params = self.to_gpu();
-    }
-}
-
-impl ToGPU for Camera {
-    type GPUType = GPUCameraParams;
-
-    fn to_gpu(&self) -> GPUCameraParams {
-        GPUCameraParams::new(&self)
+        let params = GPUCameraParams::new(&self);
     }
 }
 
