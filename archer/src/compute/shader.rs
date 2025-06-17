@@ -27,7 +27,7 @@ impl ComputeShader {
         label: &str,
         source_str: &str,
         bind_group_layout: &BindGroupLayout,
-        manager: &ComputeManager<'_>
+        manager: &ComputeManager
     ) -> Result<ComputeShader, std::io::Error> {
         let source = ShaderSource::Wgsl(source_str.into());
 
@@ -57,22 +57,29 @@ impl ComputeShader {
         })
     }
 
-    pub async fn dispatch(
+    pub async fn dispatch<T: bytemuck::Pod>(
         &self,
         bind_group: &BindGroup,
-        manager: &mut ComputeManager<'_>,
-        pass: &mut ComputePass<'_>,
+        mut manager: &mut ComputeManager,
         result_buffer: &Buffer,
         result_readback: &Buffer,
-        result_size: u64
-    ) {
-        pass.set_pipeline(&self.pipeline);
-        pass.set_bind_group(0, bind_group, &[]);
-        pass.dispatch_workgroups(1, 1, 1);
-
+        result_size: u64,
+        dispatch_dims: (u32, u32, u32),
+    ) -> Vec<T> {
         let mut encoder = manager.device.create_command_encoder(&CommandEncoderDescriptor {
             label: Some(self.label.as_str()),
         });
+
+        // TODO: Let the manager handle this
+        {
+            let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
+                label: Some("Compute Pass"),
+                timestamp_writes: None,
+            });
+            cpass.set_pipeline(&self.pipeline);
+            cpass.set_bind_group(0, bind_group, &[]);
+            cpass.dispatch_workgroups(dispatch_dims.0, dispatch_dims.1, dispatch_dims.2);
+        }
 
         encoder.copy_buffer_to_buffer(
             &result_buffer, 0,
@@ -81,7 +88,16 @@ impl ComputeShader {
         );
         let index = manager.queue.submit(Some(encoder.finish()));
 
+        let buffer_slice = result_readback.slice(..);
+        buffer_slice.map_async(wgpu::MapMode::Read, |_| {});
         manager.device.poll(PollType::WaitForSubmissionIndex(index));
+
+        let data = buffer_slice.get_mapped_range();
+        let result: Vec<T> = bytemuck::cast_slice(&data).to_vec();
+        drop(data);
+        result_readback.unmap();
+
+        result
     }
 }
 

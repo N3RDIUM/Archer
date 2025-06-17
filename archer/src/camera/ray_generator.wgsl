@@ -1,5 +1,6 @@
 struct CameraParams {
     resolution: vec2<u32>,
+    _pad0: vec2<u32>,
     position: vec3<f32>,
     _pad1: f32,
     focal_length: f32,
@@ -9,47 +10,42 @@ struct CameraParams {
 
 struct Ray {
     origin: vec3<f32>,
-    _pad1: f32
-    dir: vec3<f32>,
+    _pad1: f32,
+    direction: vec3<f32>,
     _pad2: f32,
 };
 
 @group(0) @binding(0)
-var<uniform> camera: CameraParams;
+var<storage, read> params: CameraParams;
 
 @group(0) @binding(1)
-var<storage, read_write> ray_buffer: array<Ray>;
+var<storage, read_write> rays: array<Ray>;
 
-@compute @workgroup_size(8, 8, 1)
-fn main(@builtin(global_invocation_id) id: vec3<u32>) {
-    let x = id.x;
-    let y = id.y;
+@compute @workgroup_size(16, 16)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+    let width = params.resolution.x;
+    let height = params.resolution.y;
 
-    if x >= camera.resolution.x || y >= camera.resolution.y {
+    if (gid.x >= width || gid.y >= height) {
         return;
     }
 
-    let res = vec2<f32>(camera.resolution);
-    let aspect = res.x / res.y;
-    let viewport_width = camera.viewport_height * aspect;
+    // Normalized coordinates in [-1, 1]
+    let u = (f32(gid.x) + 0.5) / f32(width) * 2.0 - 1.0;
+    let v = (f32(gid.y) + 0.5) / f32(height) * 2.0 - 1.0;
 
-    let viewport_u = vec3<f32>(viewport_width, 0.0, 0.0);
-    let viewport_v = vec3<f32>(0.0, -camera.viewport_height, 0.0);
-    let delta_u = viewport_u / res.x;
-    let delta_v = viewport_v / res.y;
+    // Viewport width derived from height and aspect ratio
+    let aspect_ratio = f32(width) / f32(height);
+    let viewport_width = aspect_ratio * params.viewport_height;
 
-    let top_left = camera.position
-        - vec3<f32>(0.0, 0.0, -camera.focal_length)
-        - viewport_u * 0.5
-        - viewport_v * 0.5
-        + (delta_u + delta_v) * 0.5;
+    // Ray direction in camera space
+    let dir = normalize(vec3<f32>(
+        u * viewport_width * 0.5,
+        -v * params.viewport_height * 0.5,
+        -params.focal_length
+    ));
 
-    let pixel_center = top_left + delta_u * f32(x) + delta_v * f32(y);
-    let ray_dir = normalize(pixel_center - camera.position);
-
-    let index = y * camera.resolution.x + x;
-
-    ray_buffer[index].origin = vec4<f32>(camera.position, 0.0);
-    ray_buffer[index].dir = vec4<f32>(ray_dir, 0.0);
+    let index = gid.y * width + gid.x;
+    rays[index] = Ray(params.position, 0.0, dir, 0.0);
 }
 
