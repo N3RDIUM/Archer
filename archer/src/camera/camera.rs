@@ -1,4 +1,3 @@
-use std::time::Instant;
 use bytemuck::{Pod, Zeroable, cast_slice};
 use pollster::block_on;
 use wgpu::*;
@@ -111,8 +110,7 @@ impl Camera {
             ],
         });
 
-        let now = Instant::now();
-        let result = block_on(shader.dispatch::<GPURay>(
+        let queue_index = shader.dispatch::<GPURay>(
             &bind_group,
             &mut manager,
             &result_buffer,
@@ -123,10 +121,9 @@ impl Camera {
                 (self.resolution.y + 7) / 16,
                 1
             ),
-        ));
-        let elapsed = now.elapsed().as_secs_f64();
-        let fps = 1.0 / elapsed;
-        println!("{elapsed} sec, {fps} fps");
+        );
+
+        let result = block_on(queue_index);
         println!("{:?}", result.len());
     }
 }
