@@ -4,15 +4,17 @@ use wgpu::*;
 use wgpu::util::*;
 
 use crate::types::{Position, Direction, PixelCoord};
-use crate::compute::ComputeManager;
+use crate::compute::{ComputeManager, ComputeShader};
 use crate::ray::GPURay;
 
-pub struct Camera {
+pub struct Camera<'a> {
     pub resolution: PixelCoord<u32>,
     pub focal_length: f32,
     pub viewport_height: f32,
     pub position: Position<f32>,
     pub rotation: Direction<f32>,
+
+    raygen: CameraRaygen<'a>,
 }
 
 #[repr(C, align(16))]
@@ -27,18 +29,58 @@ pub struct GPUCameraParams {
     _pad2: [f32; 2],
 }
 
-impl Camera {
-    pub fn new() -> Camera {
+pub struct CameraRaygen<'a> {
+    bind_group_layout: BindGroupLayout,
+    shader: ComputeShader,
+    manager: &'a mut ComputeManager,
+
+    params_buffer: Option<Buffer>,
+    result_buffer: Option<Buffer>,
+    result_readback: Option<Buffer>,
+    bind_group: Option<BindGroup>,
+}
+
+impl Camera<'_> {
+    pub fn new(manager: &mut ComputeManager) -> Camera {
+        let raygen = CameraRaygen::new(manager);
+        
         Camera {
             resolution: PixelCoord::<u32>::origin(),
             focal_length: 2.0, 
             viewport_height: 2.0,
             position: Position::<f32>::origin(),
-            rotation: Direction::<f32>::zeros()
+            rotation: Direction::<f32>::zeros(),
+            raygen
         }
     }
 
-    pub fn gen_rays(&self, mut manager: &mut ComputeManager) {
+    pub fn init(&mut self) {
+        let params = GPUCameraParams::new(self);
+        self.raygen.init_buffers(&self.resolution, params);
+    }
+
+    pub fn gen_rays(&mut self) {
+        let params = GPUCameraParams::new(self);
+        self.raygen.gen_rays(&self.resolution, params);
+    }
+}
+
+impl GPUCameraParams {
+    fn new(camera: &Camera) -> GPUCameraParams {
+        GPUCameraParams {
+            resolution: [camera.resolution.x, camera.resolution.y],
+            _pad0: [0, 0],
+            position: camera.position.coords.into(),
+            _pad1: 0.0,
+            focal_length: camera.focal_length,
+            viewport_height: camera.viewport_height,
+            _pad2: [0.0, 0.0]
+        }
+    }
+}
+
+impl CameraRaygen<'_> {
+    pub fn new(manager: &mut ComputeManager) -> CameraRaygen {
         let bind_group_layout = manager.device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
             label: Some("Camera Raygen BindGroupLayout"),
             entries: &[
@@ -71,74 +113,99 @@ impl Camera {
             &bind_group_layout
         ).expect("Failed to load shader!");
 
-        let params = GPUCameraParams::new(self);
-
-        let params_buffer = manager.device.create_buffer_init(&BufferInitDescriptor {
+        CameraRaygen {
+            bind_group_layout,
+            shader,
+            params_buffer: None,
+            result_buffer: None,
+            result_readback: None,
+            bind_group: None,
+            manager
+        }
+    }
+    
+    fn init_buffers(&mut self, resolution: &PixelCoord<u32>, params: GPUCameraParams) {
+        self.params_buffer = Some(self.manager.device.create_buffer_init(&BufferInitDescriptor {
             label: Some("Camera Parameter Buffer"),
             contents: cast_slice(&[params]),
             usage: BufferUsages::STORAGE | BufferUsages::COPY_DST,
-        });
+        }));
 
-        let total_pixels = (self.resolution.x * self.resolution.y) as usize;
+        let total_pixels = (resolution.x * resolution.y) as usize;
         let result_data = vec![GPURay::zeroed(); total_pixels];
 
-        let result_buffer = manager.device.create_buffer_init(&BufferInitDescriptor {
+        self.result_buffer = Some(self.manager.device.create_buffer_init(&BufferInitDescriptor {
             label: Some("Camera Raygen Result Buffer"),
             contents: cast_slice(&result_data),
             usage: BufferUsages::STORAGE | BufferUsages::COPY_SRC,
-        });
+        }));
 
-        let result_readback = manager.device.create_buffer(&BufferDescriptor {
+        self.result_readback = Some(self.manager.device.create_buffer(&BufferDescriptor {
             label: Some("Camera Raygen Result Readback Buffer"),
             size: (std::mem::size_of::<GPURay>() * total_pixels) as u64,
             usage: BufferUsages::COPY_DST | BufferUsages::MAP_READ,
             mapped_at_creation: false,
-        });
+        }));
 
-        let bind_group = manager.device.create_bind_group(&wgpu::BindGroupDescriptor {
+        self.bind_group = Some(self.manager.device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("Camera Raygen BindGroup"),
-            layout: &bind_group_layout,
+            layout: &self.bind_group_layout,
             entries: &[
                 wgpu::BindGroupEntry {
                     binding: 0,
-                    resource: params_buffer.as_entire_binding(),
+                    resource: self
+                        .params_buffer
+                        .as_ref()
+                        .expect("Raygen Param Buffer Not Created")
+                        .as_entire_binding(),
                 },
                 wgpu::BindGroupEntry {
                     binding: 1,
-                    resource: result_buffer.as_entire_binding(),
+                    resource: self
+                        .result_buffer
+                        .as_ref()
+                        .expect("Raygen Result Buffer Not Created")
+                        .as_entire_binding(),
                 },
             ],
-        });
+        }));
+    }
 
-        let queue_index = shader.dispatch::<GPURay>(
-            &bind_group,
-            &mut manager,
-            &result_buffer,
-            &result_readback,
+    pub fn gen_rays(&mut self, resolution: &PixelCoord<u32>, params: GPUCameraParams) {
+        let total_pixels = (resolution.x * resolution.y) as usize;
+
+        self.manager.queue.write_buffer(
+            self.params_buffer
+                .as_ref()
+                .expect("Raygen Param Buffer Not Created"),
+            0,
+            cast_slice(&[params]),
+        );
+
+        let queue_index = self.shader.dispatch::<GPURay>(
+            self
+                .bind_group
+                .as_ref()
+                .expect("Raygen Buffers Not Initialized"),
+            &mut self.manager,
+            &self
+                .result_buffer
+                .as_ref()
+                .expect("Raygen Buffers Not Initialized"),
+            &self
+                .result_readback
+                .as_ref()
+                .expect("Raygen Buffers Not Initialized"),
             (std::mem::size_of::<GPURay>() * total_pixels) as u64,
             (
-                (self.resolution.x + 7) / 16,
-                (self.resolution.y + 7) / 16,
+                (resolution.x + 7) / 16,
+                (resolution.y + 7) / 16,
                 1
             ),
         );
 
         let result = block_on(queue_index);
         println!("{:?}", result.len());
-    }
-}
-
-impl GPUCameraParams {
-    fn new(camera: &Camera) -> GPUCameraParams {
-        GPUCameraParams {
-            resolution: [camera.resolution.x, camera.resolution.y],
-            _pad0: [0, 0],
-            position: camera.position.coords.into(),
-            _pad1: 0.0,
-            focal_length: camera.focal_length,
-            viewport_height: camera.viewport_height,
-            _pad2: [0.0, 0.0]
-        }
     }
 }
 

@@ -68,7 +68,7 @@ impl ComputeShader {
             label: Some(self.label.as_str()),
         });
 
-        // TODO: Let the manager handle this
+        // TODO: Let ComputeManager handle this
         {
             let mut cpass = encoder.begin_compute_pass(&wgpu::ComputePassDescriptor {
                 label: Some("Compute Pass"),
