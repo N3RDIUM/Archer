@@ -109,7 +109,7 @@ impl CameraRaygen<'_> {
 
         let shader = manager.load_shader(
             "Camera Raygen",
-            include_str!("./ray_generator.wgsl"),
+            include_str!("./raygen.wgsl"),
             &bind_group_layout
         ).expect("Failed to load shader!");
 
