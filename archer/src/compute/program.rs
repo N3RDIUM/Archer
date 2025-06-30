@@ -5,6 +5,10 @@ use wgpu::{
     BufferBindingType,
     BindGroupLayoutEntry,
 };
+use bytemuck::{
+    Pod,
+    bytes_of,
+};
 use std::collections::HashMap;
 
 use crate::compute::{
@@ -17,7 +21,8 @@ pub struct ComputeProgram {
     source_str: String,
     inputs: HashMap<u32, String>,
     outputs: HashMap<u32, String>,
-    buffers: HashMap<String, Buffer>,
+    buffers: HashMap<u32, Buffer>,
+    readback: HashMap<u32, Buffer>,
     shader: Option<ComputeShader>,
 }
 
@@ -32,6 +37,7 @@ impl ComputeProgram {
             inputs: HashMap::new(),
             outputs: HashMap::new(),
             buffers: HashMap::new(),
+            readback: HashMap::new(),
             shader: None
         }
     }
@@ -101,6 +107,59 @@ impl ComputeProgram {
             &manager,
         ).expect("Could not compile compute shader!");
         self.shader = Some(shader);
+
+        Ok(())
+    }
+
+    fn input_buffer<T: Pod>(&mut self, manager: &ComputeManager, binding: u32, contents: T) -> Result<(), String> {
+        if !self.inputs.contains_key(&binding) {
+            return Err(format!("No input declared at binding {}.", binding));
+        }
+
+        let device = &manager.device;
+        let contents_bytes = bytes_of(&contents);
+        let buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            // TODO change label formats.
+            label: Some(&format!("InputBuffer(binding={binding})")),
+            contents: contents_bytes,
+            usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
+        });
+
+        self.buffers.insert(binding, buffer);
+        Ok(())
+    }
+
+    fn init_output_buffers(
+        &mut self,
+        manager: &ComputeManager,
+        sizes: HashMap<u32, u64>,
+    ) -> Result<(), String> {
+        let device = &manager.device;
+
+        for (&binding, _label) in &self.outputs {
+            let size = sizes.get(&binding).copied().unwrap_or(1024) as u64;
+
+            if self.buffers.contains_key(&binding) {
+                continue;
+            }
+
+            let output_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some(&format!("OutputBuffer(binding={binding})")),
+                size,
+                usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_SRC,
+                mapped_at_creation: false,
+            });
+
+            let readback_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some(&format!("ReadbackBuffer(binding={binding})")),
+                size,
+                usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            });
+
+            self.buffers.insert(binding, output_buffer);
+            self.readback.insert(binding, readback_buffer);
+        }
 
         Ok(())
     }
