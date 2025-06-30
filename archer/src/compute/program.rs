@@ -43,28 +43,28 @@ impl ComputeProgram {
         }
     }
 
-    pub fn with_input(&mut self, label: String, binding: u32) -> Result<(), String> {
+    pub fn with_input(&mut self, binding: u32, label: String) -> &mut Self {
         if self.inputs.contains_key(&binding) {
-            return Err(format!(
+            panic!(
                 "Input binding {binding} already exists in ComputeProgram {}.",
                 self.label
-            ));
+            );
         }
 
         self.inputs.insert(binding, label);
-        Ok(())
+        self
     }
 
-    pub fn with_output(&mut self, label: String, binding: u32) -> Result<(), String> {
+    pub fn with_output(&mut self, binding: u32, label: String) -> &mut Self {
         if self.outputs.contains_key(&binding) {
-            return Err(format!(
+            panic!(
                 "Ouput binding {binding} already exists in ComputeProgram {}.",
                 self.label
-            ));
+            );
         }
 
         self.outputs.insert(binding, label);
-        Ok(())
+        self
     }
 
     pub fn compile(&mut self, manager: &ComputeManager) -> Result<(), String> {
@@ -112,9 +112,9 @@ impl ComputeProgram {
         Ok(())
     }
 
-    fn input_buffer<T: Pod>(&mut self, manager: &ComputeManager, binding: u32, contents: T) -> Result<(), String> {
+    pub fn input_buffer<T: Pod>(&mut self, manager: &ComputeManager, binding: u32, contents: T) {
         if !self.inputs.contains_key(&binding) {
-            return Err(format!("No input declared at binding {}.", binding));
+            panic!("No input declared at binding {}.", binding);
         }
 
         let device = &manager.device;
@@ -127,14 +127,13 @@ impl ComputeProgram {
         });
 
         self.buffers.insert(binding, buffer);
-        Ok(())
     }
 
-    fn init_output_buffers(
+    pub fn init_output_buffers(
         &mut self,
         manager: &ComputeManager,
         sizes: HashMap<u32, u64>,
-    ) -> Result<(), String> {
+    ) {
         let device = &manager.device;
 
         for (&binding, _label) in &self.outputs {
@@ -161,8 +160,6 @@ impl ComputeProgram {
             self.buffers.insert(binding, output_buffer);
             self.readback.insert(binding, readback_buffer);
         }
-
-        Ok(())
     }
 }
 

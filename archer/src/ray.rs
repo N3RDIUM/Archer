@@ -6,7 +6,7 @@ pub struct Ray {
     pub direction: Direction<f32>
 }
 
-#[repr(C)]
+#[repr(C, align(16))]
 #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
 pub struct GPURay {
     pub origin: [f32; 3],

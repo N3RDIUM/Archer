@@ -7,6 +7,6 @@ fn main() {
 
     let mut camera = Camera::new(&mut manager);
     camera.resolution = PixelCoord::new(1920, 1080);
-    camera.init();
+    camera.gen_rays();
 }
 
