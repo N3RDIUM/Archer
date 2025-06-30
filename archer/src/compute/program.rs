@@ -5,6 +5,7 @@ use wgpu::{
     BufferBindingType,
     BindGroupLayoutEntry,
 };
+use wgpu::util::DeviceExt;
 use bytemuck::{
     Pod,
     bytes_of,
