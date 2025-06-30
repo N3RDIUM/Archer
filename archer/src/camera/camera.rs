@@ -57,7 +57,7 @@ impl Camera<'_> {
 
     pub fn gen_rays(&mut self) {
         let parameters = GPUCameraParams::new(&self);
-        self.program.input_buffer(&self.manager, 0, [parameters]);
+        self.program.input_buffer(&self.manager, 0, &[parameters]);
 
         let resolution = &self.resolution;
         let total_pixels = (resolution.x * resolution.y) as usize;

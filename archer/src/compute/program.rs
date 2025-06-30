@@ -8,7 +8,7 @@ use wgpu::{
 use wgpu::util::DeviceExt;
 use bytemuck::{
     Pod,
-    bytes_of,
+    cast_slice,
 };
 use std::collections::HashMap;
 
@@ -112,13 +112,13 @@ impl ComputeProgram {
         Ok(())
     }
 
-    pub fn input_buffer<T: Pod>(&mut self, manager: &ComputeManager, binding: u32, contents: T) {
+    pub fn input_buffer<T: Pod>(&mut self, manager: &ComputeManager, binding: u32, contents: &[T]) {
         if !self.inputs.contains_key(&binding) {
             panic!("No input declared at binding {}.", binding);
         }
 
         let device = &manager.device;
-        let contents_bytes = bytes_of(&contents);
+        let contents_bytes = cast_slice(contents);
         let buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             // TODO change label formats.
             label: Some(&format!("InputBuffer(binding={binding})")),
