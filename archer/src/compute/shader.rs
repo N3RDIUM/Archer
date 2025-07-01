@@ -16,8 +16,8 @@ use std::time::Instant;
 use crate::compute::ComputeManager;
 
 pub struct ComputeShader {
-    label: String,
-    pipeline: ComputePipeline,
+    pub label: String,
+    pub pipeline: ComputePipeline,
 }
 
 impl ComputeShader {

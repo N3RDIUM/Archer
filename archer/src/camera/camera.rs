@@ -7,7 +7,7 @@ use wgpu::util::*;
 
 use crate::types::{Position, Direction, PixelCoord};
 use crate::compute::{ComputeManager, ComputeProgram};
-use crate::ray::Ray;
+use crate::ray::GPURay;
 
 pub struct Camera<'a> {
     pub resolution: PixelCoord<u32>,
@@ -16,7 +16,7 @@ pub struct Camera<'a> {
     pub position: Position<f32>,
     pub rotation: Direction<f32>,
     program: ComputeProgram,
-    manager: &'a ComputeManager,
+    manager: &'a mut ComputeManager,
 }
 
 #[repr(C, align(16))]
@@ -61,9 +61,11 @@ impl Camera<'_> {
 
         let resolution = &self.resolution;
         let total_pixels = (resolution.x * resolution.y) as usize;
-        let output_size = (std::mem::size_of::<Ray>() * total_pixels) as u64;
+        let output_size = (std::mem::size_of::<GPURay>() * total_pixels) as u64;
         let size_map = HashMap::from([ (1, output_size) ]);
         self.program.init_output_buffers(&self.manager, size_map);
+
+        self.program.dispatch::<GPURay>(&mut self.manager, (16, 16, 1));
     }
 }
 

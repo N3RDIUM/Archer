@@ -4,6 +4,7 @@ use wgpu::{
     BindingType,
     BufferBindingType,
     BindGroupLayoutEntry,
+    CommandEncoderDescriptor
 };
 use wgpu::util::DeviceExt;
 use bytemuck::{
@@ -160,6 +161,56 @@ impl ComputeProgram {
             self.buffers.insert(binding, output_buffer);
             self.readback.insert(binding, readback_buffer);
         }
+    }
+
+    pub fn dispatch<T: Pod>(
+        &mut self,
+        manager: &mut ComputeManager,
+        dims: (u32, u32, u32),
+    ) -> Vec<T> {
+        // Ensure the shader has been compiled
+        let shader = self.shader.as_ref().expect("Shader not compiled!");
+
+        // Collect entries for bind group
+        let mut entries = vec![];
+
+        for (&binding, buffer) in &self.buffers {
+            entries.push(wgpu::BindGroupEntry {
+                binding,
+                resource: buffer.as_entire_binding(),
+            });
+        }
+
+        // Create bind group
+        let layout = shader.pipeline.get_bind_group_layout(0);
+        let bind_group = manager.device.create_bind_group(&wgpu::BindGroupDescriptor {
+            layout: &layout,
+            entries: &entries,
+            label: Some(&format!("BindGroup({})", self.label)),
+        });
+
+        // Get result buffer and readback buffer
+        let (&result_binding, result_buffer) = self
+            .outputs
+            .keys()
+            .next()
+            .and_then(|k| self.buffers.get_key_value(k))
+            .expect("No output buffers to dispatch into!");
+
+        let result_readback = self.readback.get(&result_binding)
+            .expect("No readback buffer for output binding!");
+
+        let size = result_buffer.size();
+
+        // Dispatch using shader
+        pollster::block_on(shader.dispatch::<T>(
+            &bind_group,
+            manager,
+            result_buffer,
+            result_readback,
+            size,
+            dims,
+        ))
     }
 }
 
