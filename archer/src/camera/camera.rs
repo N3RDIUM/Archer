@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 
-use bytemuck::{Pod, Zeroable, cast_slice};
-use pollster::block_on;
-use wgpu::*;
-use wgpu::util::*;
+use bytemuck::{Pod, Zeroable};
 
 use crate::types::{Position, Direction, PixelCoord};
 use crate::compute::{ComputeManager, ComputeProgram};

@@ -4,7 +4,6 @@ use wgpu::{
     BindingType,
     BufferBindingType,
     BindGroupLayoutEntry,
-    CommandEncoderDescriptor
 };
 use wgpu::util::DeviceExt;
 use bytemuck::{

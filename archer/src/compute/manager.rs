@@ -63,7 +63,7 @@ impl ComputeManager {
     }
 
     pub fn request_encoder(&mut self) -> CommandEncoder {
-        let mut encoder = self.device.create_command_encoder(&CommandEncoderDescriptor {
+        let encoder = self.device.create_command_encoder(&CommandEncoderDescriptor {
             label: Some("Nothing"),
         });
         encoder
