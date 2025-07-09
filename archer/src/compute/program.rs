@@ -199,6 +199,11 @@ impl ComputeProgram {
         let result_readback = self.readback.get(&result_binding)
             .expect("No readback buffer for output binding!");
 
+        // TODO: Handle multiple result buffers.
+        // Don't pass them to the shader.
+        // Handle mapping, unmapping, readback here.
+        // `shader.rs` will only handle the dispatch.
+
         let size = result_buffer.size();
 
         // Dispatch using shader
