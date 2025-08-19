@@ -169,7 +169,6 @@ impl ComputeProgram {
     ) -> HashMap<u32, Vec<T>> {
         let shader = self.shader.as_ref().expect("Shader not compiled!");
 
-        // 1. Build bind group
         let mut entries = vec![];
         for (&binding, buffer) in &self.buffers {
             entries.push(wgpu::BindGroupEntry {
@@ -184,14 +183,12 @@ impl ComputeProgram {
             label: Some(&format!("BindGroup({})", self.label)),
         });
 
-        // 2. Dispatch shader ONCE
         pollster::block_on(shader.dispatch::<T>(&bind_group, manager, dims));
 
-        // 3. Copy results for each output buffer
         let mut results = HashMap::new();
         for (&binding, result_buffer) in &self.buffers {
             if !self.outputs.contains_key(&binding) {
-                continue; // skip inputs
+                continue;
             }
 
             let result_readback = self.readback.get(&binding)
@@ -199,14 +196,12 @@ impl ComputeProgram {
 
             let size = result_buffer.size();
 
-            // Copy GPU → CPU staging
             let mut encoder = manager.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
                 label: Some("CopyEncoder"),
             });
             encoder.copy_buffer_to_buffer(result_buffer, 0, result_readback, 0, size);
             manager.queue.submit(Some(encoder.finish()));
 
-            // Map & read
             let slice = result_readback.slice(..);
             slice.map_async(wgpu::MapMode::Read, |_| {});
             let _ = manager.device.poll(wgpu::MaintainBase::Wait);
