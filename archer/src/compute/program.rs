@@ -166,21 +166,17 @@ impl ComputeProgram {
         &mut self,
         manager: &mut ComputeManager,
         dims: (u32, u32, u32),
-    ) -> Vec<T> {
-        // Ensure the shader has been compiled
+    ) -> HashMap<u32, Vec<T>> {
         let shader = self.shader.as_ref().expect("Shader not compiled!");
 
-        // Collect entries for bind group
+        // 1. Build bind group
         let mut entries = vec![];
-
         for (&binding, buffer) in &self.buffers {
             entries.push(wgpu::BindGroupEntry {
                 binding,
                 resource: buffer.as_entire_binding(),
             });
         }
-
-        // Create bind group
         let layout = shader.pipeline.get_bind_group_layout(0);
         let bind_group = manager.device.create_bind_group(&wgpu::BindGroupDescriptor {
             layout: &layout,
@@ -188,33 +184,42 @@ impl ComputeProgram {
             label: Some(&format!("BindGroup({})", self.label)),
         });
 
-        // Get result buffer and readback buffer
-        let (&result_binding, result_buffer) = self
-            .outputs
-            .keys()
-            .next()
-            .and_then(|k| self.buffers.get_key_value(k))
-            .expect("No output buffers to dispatch into!");
+        // 2. Dispatch shader ONCE
+        pollster::block_on(shader.dispatch::<T>(&bind_group, manager, dims));
 
-        let result_readback = self.readback.get(&result_binding)
-            .expect("No readback buffer for output binding!");
+        // 3. Copy results for each output buffer
+        let mut results = HashMap::new();
+        for (&binding, result_buffer) in &self.buffers {
+            if !self.outputs.contains_key(&binding) {
+                continue; // skip inputs
+            }
 
-        // TODO: Handle multiple result buffers.
-        // Don't pass them to the shader.
-        // Handle mapping, unmapping, readback here.
-        // `shader.rs` will only handle the dispatch.
+            let result_readback = self.readback.get(&binding)
+                .expect(&format!("No readback buffer for binding {}", binding));
 
-        let size = result_buffer.size();
+            let size = result_buffer.size();
 
-        // Dispatch using shader
-        pollster::block_on(shader.dispatch::<T>(
-            &bind_group,
-            manager,
-            result_buffer,
-            result_readback,
-            size,
-            dims,
-        ))
+            // Copy GPU → CPU staging
+            let mut encoder = manager.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("CopyEncoder"),
+            });
+            encoder.copy_buffer_to_buffer(result_buffer, 0, result_readback, 0, size);
+            manager.queue.submit(Some(encoder.finish()));
+
+            // Map & read
+            let slice = result_readback.slice(..);
+            slice.map_async(wgpu::MapMode::Read, |_| {});
+            let _ = manager.device.poll(wgpu::MaintainBase::Wait);
+
+            let data = slice.get_mapped_range();
+            let typed: Vec<T> = bytemuck::cast_slice(&data).to_vec();
+            drop(data);
+            result_readback.unmap();
+
+            results.insert(binding, typed);
+        }
+
+        results
     }
 }
 

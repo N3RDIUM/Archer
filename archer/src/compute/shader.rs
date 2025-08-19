@@ -11,7 +11,6 @@ use wgpu::{
     CommandEncoderDescriptor,
     PollType,
 };
-use std::time::Instant;
 
 use crate::compute::ComputeManager;
 
@@ -59,11 +58,8 @@ impl ComputeShader {
         &self,
         bind_group: &BindGroup,
         manager: &mut ComputeManager,
-        result_buffer: &Buffer,
-        result_readback: &Buffer,
-        result_size: u64,
         dispatch_dims: (u32, u32, u32),
-    ) -> Vec<T> {
+    ) {
         let mut encoder = manager.device.create_command_encoder(&CommandEncoderDescriptor {
             label: Some(self.label.as_str()),
         });
@@ -79,30 +75,8 @@ impl ComputeShader {
             cpass.dispatch_workgroups(dispatch_dims.0, dispatch_dims.1, dispatch_dims.2);
         }
 
-
-        encoder.copy_buffer_to_buffer(
-            &result_buffer, 0,
-            &result_readback, 0,
-            result_size
-        );
-
-        let now = Instant::now();
         let index = manager.queue.submit(Some(encoder.finish()));
-
-        let buffer_slice = result_readback.slice(..);
-        buffer_slice.map_async(wgpu::MapMode::Read, |_| {});
         let _ = manager.device.poll(PollType::WaitForSubmissionIndex(index));
-
-        let elapsed = now.elapsed().as_secs_f64();
-        let fps = 1.0 / elapsed;
-        println!("{elapsed} sec, {fps} fps");
-
-        let data = buffer_slice.get_mapped_range();
-        let result: Vec<T> = bytemuck::cast_slice(&data).to_vec();
-        drop(data);
-        result_readback.unmap();
-
-        result
     }
 }
 

@@ -52,7 +52,7 @@ impl Camera<'_> {
         }
     }
 
-    pub fn gen_rays(&mut self) {
+    pub fn gen_rays(&mut self) -> Vec<GPURay> {
         let parameters = GPUCameraParams::new(&self);
         self.program.input_buffer(&self.manager, 0, &[parameters]);
 
@@ -62,7 +62,14 @@ impl Camera<'_> {
         let size_map = HashMap::from([ (1, output_size) ]);
         self.program.init_output_buffers(&self.manager, size_map);
 
-        self.program.dispatch::<GPURay>(&mut self.manager, (16, 16, 1));
+        let workgroups_x = (resolution.x + 15) / 16;
+        let workgroups_y = (resolution.y + 15) / 16;
+        let result = self.program.dispatch::<GPURay>(
+            &mut self.manager, 
+            (workgroups_x, workgroups_y, 1)
+        );
+
+        result[&1].clone()
     }
 }
 
